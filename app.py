@@ -1,80 +1,107 @@
-﻿import cv2
-import numpy as np
-import base64
-import os
+﻿import io
+import csv
 from datetime import datetime
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
+from typing import Optional
+from fastapi import FastAPI, Response, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 
-app = FastAPI(title="MSDE Vigilance & Infrastructure Inspection Platform")
+app = FastAPI(
+    title="TraceVision Compliance & Monitoring Engine",
+    description="Edge-to-cloud AI compliance verification for MSDE vocational centers (DPDP Act 2023 compliant)",
+    version="1.2.0"
+)
 
-# Mount static files
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-face_cascade = None
-try:
-    cascade_path = getattr(cv2.data, 'haarcascades', '') + 'haarcascade_frontalface_default.xml'
-    face_cascade = cv2.CascadeClassifier(cascade_path)
-    if face_cascade.empty():
-        face_cascade = None
-except Exception:
-    face_cascade = None
+templates = Jinja2Templates(directory="templates")
 
-class FramePayload(BaseModel):
-    image_base64: str
-    camera_id: str = "CAM-01"
+class SystemState:
+    def __init__(self):
+        self.enrolled_capacity = 25
+        self.detected_headcount = 22
+        self.mandatory_equipment_present = True
+        self.camera_tampered = False
+        self.center_id = "TC-AP-ANP-042"
+        self.batch_id = "PMKVY-4.0-CSE-B1"
 
-@app.get("/", response_class=HTMLResponse)
-def get_dashboard():
-    with open("templates/index.html", "r", encoding="utf-8") as f:
-        return f.read()
+state = SystemState()
 
-@app.post("/api/v1/analyze_frame")
-def analyze_frame(payload: FramePayload):
-    try:
-        nparr = np.frombuffer(base64.b64decode(payload.image_base64), np.uint8)
-        frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-        if frame is None:
-            raise HTTPException(status_code=400, detail="Invalid frame format")
+class SimulationOverride(BaseModel):
+    detected_headcount: Optional[int] = None
+    mandatory_equipment_present: Optional[bool] = None
+    camera_tampered: Optional[bool] = None
 
-        detected_count = 0
-        if face_cascade is not None:
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=4, minSize=(30, 30))
-            detected_count = len(faces)
-            for (x, y, fw, fh) in faces:
-                cv2.rectangle(frame, (x, y), (x + fw, y + fh), (19, 136, 8), 2)
-                cv2.putText(frame, "Verified Candidate", (x, max(20, y - 8)),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.45, (19, 136, 8), 1, cv2.LINE_AA)
+@app.get("/", summary="Dashboard UI")
+def serve_dashboard(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
-        # Official Govt Stamp Overlay
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        cv2.putText(frame, f"GOVT OF INDIA | MSDE ATP-0104 | {payload.camera_id} | {timestamp}",
-                    (15, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (255, 255, 255), 1, cv2.LINE_AA)
-        cv2.putText(frame, f"Verified Trainees In-Frame: {detected_count} / 25",
-                    (15, 48), cv2.FONT_HERSHEY_SIMPLEX, 0.50, (51, 153, 255), 2, cv2.LINE_AA)
+@app.get("/api/v1/telemetry", summary="Fetch Live Telemetry & Compliance Score")
+def get_telemetry():
+    compliance_percentage = (
+        0.0 if state.camera_tampered 
+        else round((state.detected_headcount / state.enrolled_capacity) * 100, 1)
+    )
+    
+    violations = []
+    if state.camera_tampered:
+        violations.append("CRITICAL: Camera Occlusion / Offline Detected")
+    if compliance_percentage < 70.0 and not state.camera_tampered:
+        violations.append(f"HIGH: Attendance Below 70% Quota ({compliance_percentage}%)")
+    if not state.mandatory_equipment_present:
+        violations.append("MEDIUM: Mandatory Lab Equipment / Safety Kit Missing")
 
-        _, buffer = cv2.imencode('.jpg', frame, [int(cv2.IMWRITE_JPEG_QUALITY), 70])
-        encoded_image = base64.b64encode(buffer).decode('utf-8')
+    status_code = "GREEN" if not violations else ("RED" if any("CRITICAL" in v or "HIGH" in v for v in violations) else "YELLOW")
 
-        enrolled = 25
-        rate = round((detected_count / enrolled) * 100, 1)
-        discrepancies = []
-        if rate < 70.0 and detected_count > 0:
-            discrepancies.append(f"Mandatory 70% Attendance Quota Breached: {rate}%")
+    return {
+        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "center_id": state.center_id,
+        "batch_id": state.batch_id,
+        "enrolled_capacity": state.enrolled_capacity,
+        "detected_headcount": state.detected_headcount,
+        "compliance_percentage": compliance_percentage,
+        "equipment_status": "VERIFIED" if state.mandatory_equipment_present else "MISSING",
+        "camera_health": "TAMPERED/OFFLINE" if state.camera_tampered else "HEALTHY",
+        "status": status_code,
+        "violations": violations,
+        "payload_size_bytes": 164
+    }
 
-        return {
-            "status": "success",
-            "detected_heads": detected_count,
-            "attendance_percentage": rate,
-            "discrepancies": discrepancies,
-            "processed_image": encoded_image
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+@app.post("/api/v1/simulate", summary="Trigger Live Demo Edge Overrides")
+def simulate_edge_change(override: SimulationOverride):
+    if override.detected_headcount is not None:
+        state.detected_headcount = override.detected_headcount
+    if override.mandatory_equipment_present is not None:
+        state.mandatory_equipment_present = override.mandatory_equipment_present
+    if override.camera_tampered is not None:
+        state.camera_tampered = override.camera_tampered
+    return {"message": "State updated", "current_state": get_telemetry()}
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("app:app", host="127.0.0.1", port=8000, reload=True)
+@app.get("/api/v1/export-report", summary="Download Audit CSV Dossier")
+def export_csv_report():
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Timestamp", "Center ID", "Batch ID", "Capacity", "Headcount", "Compliance %", "Equipment OK", "Camera Status", "Audit Verdict"])
+    
+    now = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+    comp = round((state.detected_headcount / state.enrolled_capacity) * 100, 1)
+    verdict = "APPROVED" if comp >= 70.0 and state.mandatory_equipment_present and not state.camera_tampered else "FLAGGED_FOR_REVIEW"
+    
+    writer.writerow([
+        now, state.center_id, state.batch_id, state.enrolled_capacity,
+        state.detected_headcount, f"{comp}%", state.mandatory_equipment_present,
+        "HEALTHY" if not state.camera_tampered else "OCCLUDED", verdict
+    ])
+    output.seek(0)
+    return Response(
+        content=output.getvalue(),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename=audit_report_{state.center_id}.csv"}
+    )

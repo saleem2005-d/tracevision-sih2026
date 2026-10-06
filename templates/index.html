@@ -1,440 +1,156 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TraceVision | Smart Training Centre Monitoring & Compliance System</title>
-    <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="/static/gov-portal.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .view-section { display: none; }
-        .view-section.active { display: block; }
-        .matrix-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-        .cam-box { background: #0b131e; border: 1px solid var(--gov-border); border-radius: 4px; padding: 8px; color: #fff; }
-        .cam-box-title { font-size: 11px; font-weight: bold; color: #ff9933; margin-bottom: 6px; display: flex; justify-content: space-between; }
-        .cam-box-screen { aspect-ratio: 16/9; background: #04080e; display: flex; align-items: center; justify-content: center; font-family: monospace; font-size: 12px; color: #7b96b2; }
-        .search-box { padding: 6px 10px; border: 1px solid var(--gov-border); border-radius: 4px; font-size: 12px; width: 260px; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TraceVision | MSDE Compliance Command Center</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-6 font-sans">
+  <div class="max-w-6xl mx-auto space-y-6">
 
-    <!-- Top Tricolor Accent Line -->
-    <div class="gov-tricolor-stripe"></div>
-
-    <!-- Clean Top Utility Bar -->
-    <div class="gov-top-bar">
-        <div>
-            <span><strong>TraceVision</strong> | Autonomous Surveillance & Infrastructure Intelligence</span>
+    <!-- Header -->
+    <header class="flex flex-col md:flex-row justify-between items-start md:items-center bg-slate-900 border border-slate-800 p-5 rounded-xl shadow-lg gap-4">
+      <div>
+        <div class="flex items-center gap-3">
+          <span class="inline-block w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+          <h1 class="text-2xl font-bold tracking-tight text-white">TraceVision Engine</h1>
+          <span class="text-xs font-semibold px-2.5 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-800">DPDP Act 2023 Compliant</span>
         </div>
-        <div>
-            <span id="liveClock">--:--:--</span> |
-            <span>System Status: <strong style="color: var(--gov-green);">Operational</strong></span>
-        </div>
-    </div>
-
-    <!-- Clean Header: Streamlined Branding without Clutter -->
-    <header class="gov-header">
-        <div class="gov-brand-wrap">
-            <div style="width: 44px; height: 44px; background: #0e2a47; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ff9933; font-size: 22px;">
-                <i class="fa-solid fa-eye"></i>
-            </div>
-            <div class="gov-titles">
-                <h2>AI-POWERED CONTINUOUS SURVEILLANCE PLATFORM</h2>
-                <h1 style="display: flex; align-items: center; gap: 10px;">
-                    TraceVision <span style="font-size: 13px; background: #eef3f8; color: var(--gov-blue); padding: 2px 8px; border-radius: 4px; border: 1px solid #c8d7e6;">Center Monitoring Console</span>
-                </h1>
-                <div class="sub-text">Autonomous Trainee Headcount Verification & Infrastructure Compliance Suite</div>
-            </div>
-        </div>
-        <div class="gov-badge-node">
-            <div style="font-size: 10px; color: var(--gov-text-muted);">MONITORING STATION</div>
-            <div style="font-size: 13px; font-weight: bold; color: var(--gov-navy);">ANANTAPUR CENTER NODE</div>
-            <div style="font-size: 10px; color: var(--gov-green); font-weight: 600;"><i class="fa-solid fa-circle-check"></i> LIVE INFERENCE ONLINE</div>
-        </div>
+        <p class="text-sm text-slate-400 mt-1">Autonomous Edge Telemetry & Compliance Monitoring for MSDE Training Centres</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="/api/v1/export-report" download class="bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm px-4 py-2 rounded-lg transition-all flex items-center gap-2 shadow">
+          <span>Download Audit CSV</span>
+        </a>
+        <a href="/docs" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm px-3 py-2 rounded-lg border border-slate-700">API Docs</a>
+      </div>
     </header>
 
-    <!-- App Shell -->
-    <div class="gov-app-shell">
-        
-        <!-- Sidebar Navigation -->
-        <aside class="gov-sidebar">
-            <div class="sidebar-heading">Navigation Menu</div>
-            <ul class="sidebar-nav">
-                <li class="sidebar-item active" id="nav-dashboard">
-                    <a href="javascript:void(0)" onclick="navigateTo('dashboard', 'Home Dashboard')"><i class="fa-solid fa-house"></i> Home Dashboard</a>
-                </li>
-                <li class="sidebar-item" id="nav-matrix">
-                    <a href="javascript:void(0)" onclick="navigateTo('matrix', 'Surveillance Matrix')"><i class="fa-solid fa-video"></i> Surveillance Matrix</a>
-                </li>
-                <li class="sidebar-item" id="nav-infra">
-                    <a href="javascript:void(0)" onclick="navigateTo('infra', 'Infrastructure Verification')"><i class="fa-solid fa-list-check"></i> Infra Verification</a>
-                </li>
-                <li class="sidebar-item" id="nav-trainees">
-                    <a href="javascript:void(0)" onclick="navigateTo('trainees', 'Trainee Registry')"><i class="fa-solid fa-users"></i> Trainee Registry</a>
-                </li>
-                <li class="sidebar-item" id="nav-alerts">
-                    <a href="javascript:void(0)" onclick="navigateTo('alerts', 'Vigilance & Discrepancy Alerts')"><i class="fa-solid fa-triangle-exclamation"></i> Vigilance Alerts</a>
-                </li>
-                <li class="sidebar-item" id="nav-geo">
-                    <a href="javascript:void(0)" onclick="navigateTo('geo', 'Center Geo-Compliance')"><i class="fa-solid fa-location-crosshairs"></i> Geo-Compliance</a>
-                </li>
-            </ul>
-
-            <div class="sidebar-heading">Inspection Exports</div>
-            <ul class="sidebar-nav">
-                <li class="sidebar-item">
-                    <a href="javascript:void(0)" onclick="exportAuditReport()"><i class="fa-solid fa-file-excel"></i> Export Audit CSV</a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="javascript:void(0)" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Inspection Form</a>
-                </li>
-            </ul>
-
-            <div style="margin-top: auto; padding: 16px; font-size: 11px; color: #7b96b2; border-top: 1px solid rgba(255,255,255,0.1);">
-                <div>TraceVision AI Core</div>
-                <div>Status: <strong>Ready for Evaluation</strong></div>
-            </div>
-        </aside>
-
-        <!-- Main Workspace -->
-        <main class="gov-main-content">
-            
-            <!-- Breadcrumbs -->
-            <div class="gov-breadcrumb-bar">
-                <div class="gov-breadcrumbs">
-                    <a href="javascript:void(0)" onclick="navigateTo('dashboard', 'Home Dashboard')"><i class="fa-solid fa-house"></i> Home</a> <span>/</span>
-                    <span id="breadcrumbCurrent">Home Dashboard</span>
-                </div>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn-gov" onclick="exportAuditReport()"><i class="fa-solid fa-download"></i> Generate CSV Report</button>
-                    <button class="btn-gov btn-gov-secondary" onclick="clearAuditLog()"><i class="fa-solid fa-eraser"></i> Clear Discrepancy Log</button>
-                </div>
-            </div>
-
-            <!-- ================= VIEW 1: HOME DASHBOARD ================= -->
-            <div id="view-dashboard" class="view-section active">
-                <div class="metrics-row">
-                    <div class="metric-box">
-                        <div class="metric-label">Registered Trainees</div>
-                        <div class="metric-value">25</div>
-                        <div style="font-size: 11px; color: var(--gov-text-muted); margin-top: 4px;">Candidate Batch: Regular Session</div>
-                    </div>
-                    <div class="metric-box orange">
-                        <div class="metric-label">AI Present (Live)</div>
-                        <div class="metric-value" id="statPresent">0</div>
-                        <div style="font-size: 11px; color: var(--gov-text-muted); margin-top: 4px;">Real-Time Face & Head Count</div>
-                    </div>
-                    <div class="metric-box green">
-                        <div class="metric-label">Live Attendance Ratio</div>
-                        <div class="metric-value" id="statRate">0%</div>
-                        <div style="font-size: 11px; color: var(--gov-text-muted); margin-top: 4px;">Minimum Requisite: 70%</div>
-                    </div>
-                    <div class="metric-box">
-                        <div class="metric-label">Compliance Status</div>
-                        <div style="margin-top: 6px;">
-                            <span id="complianceBadge" class="badge-status badge-pass">COMPLIANT</span>
-                        </div>
-                        <div style="font-size: 11px; color: var(--gov-text-muted); margin-top: 6px;">Biometric Verification Link Active</div>
-                    </div>
-                </div>
-
-                <div class="dashboard-grid">
-                    <div>
-                        <div class="gov-card">
-                            <div class="gov-card-header">
-                                <h3><i class="fa-solid fa-video"></i> Primary Camera Stream</h3>
-                                <div style="display: flex; gap: 6px;">
-                                    <span class="badge-status badge-pass" id="latencyTag">Engine: Idle</span>
-                                    <span class="badge-status badge-warn" id="fpsTag">FPS: 0.0</span>
-                                </div>
-                            </div>
-                            <div class="gov-card-body">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                                    <div style="display: flex; gap: 6px;">
-                                        <button class="btn-gov" id="btn-CAM-01" onclick="switchFeed('CAM-01')">CAM 1: Theory Room</button>
-                                        <button class="btn-gov btn-gov-secondary" id="btn-CAM-02" onclick="switchFeed('CAM-02')">CAM 2: IT Lab</button>
-                                        <button class="btn-gov btn-gov-secondary" id="btn-CAM-03" onclick="switchFeed('CAM-03')">CAM 3: Biometric Entry</button>
-                                    </div>
-                                    <span style="font-size: 11px; font-weight: 600; color: var(--gov-text-muted);" id="activeCamLabel">CAM 1: Theory Room (Active)</span>
-                                </div>
-
-                                <div class="video-frame-container">
-                                    <video id="webcam" autoplay playsinline muted style="display: none;"></video>
-                                    <canvas id="displayCanvas"></canvas>
-                                    <canvas id="captureCanvas" style="display: none;"></canvas>
-                                </div>
-
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px;">
-                                    <div style="display: flex; gap: 8px;">
-                                        <button class="btn-gov" id="btnStart" onclick="toggleCamera()">
-                                            <i class="fa-solid fa-camera"></i> <span id="btnStartLabel">Connect Hardware Webcam</span>
-                                        </button>
-                                        <button class="btn-gov btn-gov-secondary" id="btnSim" onclick="triggerSimulatedAudit()">
-                                            <i class="fa-solid fa-play"></i> <span id="simBtnLabel">Run Synthetic Classroom Test</span>
-                                        </button>
-                                    </div>
-                                    <div style="font-size: 11px; color: var(--gov-text-muted);">
-                                        Anti-Spoofing: <strong style="color: var(--gov-green);">ACTIVE</strong> | Engine: <strong>TraceVision VisionCore</strong>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <div class="gov-card">
-                            <div class="gov-card-header">
-                                <h3><i class="fa-solid fa-clipboard-check"></i> Real-Time Infrastructure Rules</h3>
-                                <span class="badge-status badge-pass">Score: 95 / 100</span>
-                            </div>
-                            <div class="gov-card-body" style="padding: 0;">
-                                <table class="gov-table">
-                                    <thead>
-                                        <tr><th>Requirement</th><th>Live Reading</th><th>Status</th></tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><strong>CCTV Stream Availability</strong><div style="font-size: 10px; color: #64748b;">Classroom coverage verified</div></td>
-                                            <td>Active (Local Feed)</td>
-                                            <td><span class="badge-status badge-pass">PASS</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Biometric Terminal Link</strong><div style="font-size: 10px; color: #64748b;">Daily attendance sync bridge</div></td>
-                                            <td>Connected</td>
-                                            <td><span class="badge-status badge-pass">SYNCED</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Workstation Ratio (1:1)</strong><div style="font-size: 10px; color: #64748b;">Terminal count meets quota</div></td>
-                                            <td>26 Units Online</td>
-                                            <td><span class="badge-status badge-pass">PASS</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Mandatory 70% Attendance</strong><div style="font-size: 10px; color: #64748b;">Continuous minimum occupancy</div></td>
-                                            <td id="quotaText">0% / 70%</td>
-                                            <td><span id="quotaBadge" class="badge-status badge-warn">EVALUATING</span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <div style="padding: 12px 16px;">
-                                    <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--gov-text-muted);">
-                                        <span>Current Occupancy Gauge</span>
-                                        <span id="quotaBarLabel">0%</span>
-                                    </div>
-                                    <div class="gov-progress">
-                                        <div class="gov-progress-fill" id="barCompliance" style="width: 0%;"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="gov-card">
-                            <div class="gov-card-header">
-                                <h3><i class="fa-solid fa-triangle-exclamation"></i> Discrepancy Stream</h3>
-                                <button class="btn-gov btn-gov-secondary" style="padding: 2px 6px; font-size: 10px;" onclick="clearAuditLog()">Reset</button>
-                            </div>
-                            <div class="gov-card-body" style="padding: 0;">
-                                <div class="audit-log-container" id="alertLog">
-                                    <div class="log-row">
-                                        <div class="log-time">[READY]</div>
-                                        <div>TraceVision core ready. Click <strong>Connect Hardware Webcam</strong> or <strong>Run Synthetic Classroom Test</strong>.</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ================= VIEW 2: SURVEILLANCE MATRIX ================= -->
-            <div id="view-matrix" class="view-section">
-                <div class="gov-card">
-                    <div class="gov-card-header">
-                        <h3><i class="fa-solid fa-table-cells"></i> Multi-Camera Surveillance Matrix (4-Channel Node)</h3>
-                        <span class="badge-status badge-pass">All Streams Synchronized</span>
-                    </div>
-                    <div class="gov-card-body">
-                        <div class="matrix-grid">
-                            <div class="cam-box">
-                                <div class="cam-box-title">
-                                    <span>CAM-01: THEORY HALL (PRIMARY)</span>
-                                    <span style="color: #10b981;">● 30 FPS</span>
-                                </div>
-                                <div class="cam-box-screen">FEED TIED TO PRIMARY WEBCAM / SIMULATOR</div>
-                            </div>
-                            <div class="cam-box">
-                                <div class="cam-box-title">
-                                    <span>CAM-02: COMPUTER PRACTICAL LAB</span>
-                                    <span style="color: #10b981;">● 30 FPS</span>
-                                </div>
-                                <div class="cam-box-screen">26 WORKSTATIONS ACTIVE | 0 HARDWARE ERRORS</div>
-                            </div>
-                            <div class="cam-box">
-                                <div class="cam-box-title">
-                                    <span>CAM-03: ENTRANCE BIOMETRIC PORTAL</span>
-                                    <span style="color: #10b981;">● 30 FPS</span>
-                                </div>
-                                <div class="cam-box-screen">INSPECTION CHECK: ACCESS GATE CLEAR</div>
-                            </div>
-                            <div class="cam-box">
-                                <div class="cam-box-title">
-                                    <span>CAM-04: EQUIPMENT & FIRE SAFETY BAY</span>
-                                    <span style="color: #10b981;">● 30 FPS</span>
-                                </div>
-                                <div class="cam-box-screen">OBJECT DETECTION: SAFETY APPARATUS DETECTED</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ================= VIEW 3: INFRASTRUCTURE VERIFICATION ================= -->
-            <div id="view-infra" class="view-section">
-                <div class="gov-card">
-                    <div class="gov-card-header">
-                        <h3><i class="fa-solid fa-list-check"></i> Center Infrastructure Compliance Assessment</h3>
-                        <button class="btn-gov" onclick="alert('Infrastructure scan refreshed.')"><i class="fa-solid fa-arrows-rotate"></i> Re-scan Equipment</button>
-                    </div>
-                    <div class="gov-card-body" style="padding: 0;">
-                        <table class="gov-table">
-                            <thead>
-                                <tr>
-                                    <th>Compliance Parameter</th>
-                                    <th>Prescribed Standard</th>
-                                    <th>Observed Verification</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><strong>CCTV Surveillance Blindspots</strong></td>
-                                    <td>Full coverage across instructional hall</td>
-                                    <td>100% room geometry visible</td>
-                                    <td><span class="badge-status badge-pass">PASSED</span></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Individual Terminal Ratio</strong></td>
-                                    <td>1 Desktop per trainee in batch</td>
-                                    <td>26 Desktops for 25 Candidates</td>
-                                    <td><span class="badge-status badge-pass">PASSED</span></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Biometric Hardware Bridge</strong></td>
-                                    <td>Synced biometric authentication logger</td>
-                                    <td>API Mock Active (Response 18ms)</td>
-                                    <td><span class="badge-status badge-pass">PASSED</span></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Classroom Lighting & Visibility</strong></td>
-                                    <td>Adequate workspace illumination</td>
-                                    <td>Optimal contrast verified via frame histogram</td>
-                                    <td><span class="badge-status badge-pass">PASSED</span></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Fire Safety Installation</strong></td>
-                                    <td>Visible fire protection apparatus</td>
-                                    <td>Detected in designated quadrant</td>
-                                    <td><span class="badge-status badge-pass">PASSED</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ================= VIEW 4: TRAINEE REGISTRY ================= -->
-            <div id="view-trainees" class="view-section">
-                <div class="gov-card">
-                    <div class="gov-card-header">
-                        <h3><i class="fa-solid fa-users"></i> Batch Trainee Registry & Verification Log</h3>
-                        <input type="text" id="traineeSearch" placeholder="Search candidate ID or status..." class="search-box" onkeyup="filterTrainees()">
-                    </div>
-                    <div class="gov-card-body" style="padding: 0;">
-                        <table class="gov-table" id="traineeTable">
-                            <thead>
-                                <tr>
-                                    <th>Candidate ID</th>
-                                    <th>Biometric Ingestion</th>
-                                    <th>Optical AI Verified</th>
-                                    <th>Attendance Status</th>
-                                    <th>Last Detected Timestamp</th>
-                                </tr>
-                            </thead>
-                            <tbody id="traineeRows">
-                                <!-- Populated dynamically by script -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ================= VIEW 5: VIGILANCE ALERTS ================= -->
-            <div id="view-alerts" class="view-section">
-                <div class="gov-card">
-                    <div class="gov-card-header">
-                        <h3><i class="fa-solid fa-triangle-exclamation"></i> Discrepancy & Vigilance Audit Logs</h3>
-                        <button class="btn-gov btn-gov-secondary" onclick="clearAuditLog()"><i class="fa-solid fa-trash"></i> Clear Incident Log</button>
-                    </div>
-                    <div class="gov-card-body">
-                        <div class="audit-log-container" id="fullAlertLog" style="max-height: 380px;">
-                            <div class="log-row">
-                                <div class="log-time">[SYSTEM START]</div>
-                                <div>Log buffer active. Discrepancies like quota breaches and dropouts will record here automatically.</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ================= VIEW 6: GEO-COMPLIANCE ================= -->
-            <div id="view-geo" class="view-section">
-                <div class="gov-card">
-                    <div class="gov-card-header">
-                        <h3><i class="fa-solid fa-location-crosshairs"></i> Training Center Geofencing Validation</h3>
-                        <span class="badge-status badge-pass">Boundary Check: Confirmed</span>
-                    </div>
-                    <div class="gov-card-body">
-                        <p style="font-size: 13px; color: var(--gov-text-muted); margin-bottom: 16px;">
-                            Ensures camera telemetry matches the designated training facility geographic coordinates.
-                        </p>
-                        <table class="gov-table" style="max-width: 600px;">
-                            <tr>
-                                <th>Designated Coordinates</th>
-                                <td>14.6819° N, 77.6006° E</td>
-                            </tr>
-                            <tr>
-                                <th>Permissible Geofence Radius</th>
-                                <td>50 Meters</td>
-                            </tr>
-                            <tr>
-                                <th>Inspection Node Estimated Offset</th>
-                                <td>± 3.2 Meters</td>
-                            </tr>
-                            <tr>
-                                <th>Anti-Spoof Temporal Signature</th>
-                                <td>UTC Timestamp cryptographic hash verified</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-        </main>
+    <!-- Top KPI Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Attendance Compliance</span>
+        <div class="flex items-baseline gap-2 mt-2">
+          <span id="kpi-compliance" class="text-3xl font-extrabold text-emerald-400">--%</span>
+          <span id="kpi-counts" class="text-xs text-slate-400">(-- / --)</span>
+        </div>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Lab Equipment Status</span>
+        <div class="mt-2">
+          <span id="kpi-equipment" class="text-lg font-bold text-slate-200">VERIFYING...</span>
+        </div>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">CCTV Feed Health</span>
+        <div class="mt-2">
+          <span id="kpi-camera" class="text-lg font-bold text-slate-200">HEALTHY</span>
+        </div>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Uplink Telemetry Rate</span>
+        <div class="flex items-baseline gap-2 mt-2">
+          <span id="kpi-payload" class="text-2xl font-bold text-sky-400">164 B</span>
+          <span class="text-xs text-slate-400">(&lt; 2 KB/min)</span>
+        </div>
+      </div>
     </div>
 
-    <!-- Clean Footer -->
-    <footer class="gov-footer">
-        <div>
-            <div><strong>TraceVision</strong> | Autonomous Surveillance & Infrastructure Intelligence</div>
-            <div>Continuous Computer Vision & Telemetry Engine</div>
-        </div>
-        <div style="text-align: right;">
-            <div>Prototype Evaluation Platform</div>
-            <div>Build v3.0</div>
-        </div>
-    </footer>
+    <!-- Active Violations Banner -->
+    <div id="violation-card" class="hidden border border-red-800 bg-red-950/40 p-4 rounded-xl text-red-200 space-y-1">
+      <div class="font-bold text-sm flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-red-500"></span>
+        <span>Active Compliance Violations:</span>
+      </div>
+      <ul id="violation-list" class="text-xs list-disc pl-5 space-y-0.5 text-red-300"></ul>
+    </div>
 
-    <!-- Clean Script -->
-    <script src="/static/gov-main.js"></script>
+    <!-- Simulation Controls for Evaluation -->
+    <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-3">
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-300">Live Evaluation Simulation Triggers</h2>
+        <span class="text-xs text-slate-500">Click to dynamically test rule engine response</span>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <button onclick="simulate(22, true, false)" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-emerald-500 p-3 rounded-lg text-left transition">
+          <div class="text-xs font-bold text-emerald-400">Standard Session</div>
+          <div class="text-[11px] text-slate-400 mt-1">22/25 Present (88%), Tools Present</div>
+        </button>
+        <button onclick="simulate(10, true, false)" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-amber-500 p-3 rounded-lg text-left transition">
+          <div class="text-xs font-bold text-amber-400">Ghost Batch Alert</div>
+          <div class="text-[11px] text-slate-400 mt-1">10/25 (40% - Under 70% Quota)</div>
+        </button>
+        <button onclick="simulate(22, false, false)" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-orange-500 p-3 rounded-lg text-left transition">
+          <div class="text-xs font-bold text-orange-400">Missing Safety Kit</div>
+          <div class="text-[11px] text-slate-400 mt-1">Equipment check violation</div>
+        </button>
+        <button onclick="simulate(0, true, true)" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-red-500 p-3 rounded-lg text-left transition">
+          <div class="text-xs font-bold text-red-400">Tamper / Occlusion</div>
+          <div class="text-[11px] text-slate-400 mt-1">Camera offline or covered</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Telemetry Payload Box -->
+    <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+      <div class="flex justify-between items-center mb-2">
+        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Live Edge Telemetry JSON Payload</span>
+        <span id="telemetry-time" class="text-xs text-slate-500">Syncing...</span>
+      </div>
+      <pre id="json-viewer" class="bg-slate-950 p-3 rounded-lg text-xs font-mono text-emerald-400 overflow-x-auto border border-slate-800">Fetching telemetry...</pre>
+    </div>
+
+  </div>
+
+  <script>
+    async function fetchTelemetry() {
+      try {
+        const res = await fetch('/api/v1/telemetry');
+        const data = await res.json();
+        
+        document.getElementById('kpi-compliance').innerText = `${data.compliance_percentage}%`;
+        document.getElementById('kpi-compliance').className = `text-3xl font-extrabold ${data.compliance_percentage >= 70 ? 'text-emerald-400' : 'text-red-400'}`;
+        document.getElementById('kpi-counts').innerText = `(${data.detected_headcount} / ${data.enrolled_capacity})`;
+        
+        document.getElementById('kpi-equipment').innerText = data.equipment_status;
+        document.getElementById('kpi-equipment').className = `text-lg font-bold ${data.equipment_status === 'VERIFIED' ? 'text-emerald-400' : 'text-amber-400'}`;
+        
+        document.getElementById('kpi-camera').innerText = data.camera_health;
+        document.getElementById('kpi-camera').className = `text-lg font-bold ${data.camera_health === 'HEALTHY' ? 'text-emerald-400' : 'text-red-400'}`;
+        
+        document.getElementById('kpi-payload').innerText = `${data.payload_size_bytes} B`;
+        document.getElementById('telemetry-time').innerText = `Last Received: ${data.timestamp}`;
+        document.getElementById('json-viewer').innerText = JSON.stringify(data, null, 2);
+
+        const vCard = document.getElementById('violation-card');
+        const vList = document.getElementById('violation-list');
+        if (data.violations && data.violations.length > 0) {
+          vCard.classList.remove('hidden');
+          vList.innerHTML = data.violations.map(v => `<li>${v}</li>`).join('');
+        } else {
+          vCard.classList.add('hidden');
+        }
+      } catch (e) {
+        console.error("Telemetry sync error:", e);
+      }
+    }
+
+    async function simulate(headcount, equipment, tampered) {
+      await fetch('/api/v1/simulate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          detected_headcount: headcount,
+          mandatory_equipment_present: equipment,
+          camera_tampered: tampered
+        })
+      });
+      fetchTelemetry();
+    }
+
+    setInterval(fetchTelemetry, 3000);
+    fetchTelemetry();
+  </script>
 </body>
 </html>
