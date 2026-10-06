@@ -1,16 +1,16 @@
 ﻿import io
 import csv
+import os
 from datetime import datetime
 from typing import Optional
-from fastapi import FastAPI, Response, Request
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 
 app = FastAPI(
     title="TraceVision Compliance & Monitoring Engine",
     description="Edge-to-cloud AI compliance verification for MSDE vocational centers (DPDP Act 2023 compliant)",
-    version="1.2.0"
+    version="2.0.0"
 )
 
 app.add_middleware(
@@ -21,7 +21,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-templates = Jinja2Templates(directory="templates")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+HTML_PATH = os.path.join(BASE_DIR, "index.html")
 
 class SystemState:
     def __init__(self):
@@ -40,10 +41,17 @@ class SimulationOverride(BaseModel):
     camera_tampered: Optional[bool] = None
 
 @app.get("/", summary="Dashboard UI")
-def serve_dashboard(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+def serve_dashboard():
+    if os.path.exists(HTML_PATH):
+        with open(HTML_PATH, "r", encoding="utf-8") as f:
+            html_content = f.read()
+        return Response(content=html_content, media_type="text/html")
+    return Response(
+        content="<h2>TraceVision Backend is Online</h2><p>index.html not found in root directory.</p>",
+        media_type="text/html"
+    )
 
-@app.get("/api/v1/telemetry", summary="Fetch Live Telemetry & Compliance Score")
+@app.get("/api/v1/telemetry", summary="Fetch Live Telemetry")
 def get_telemetry():
     compliance_percentage = (
         0.0 if state.camera_tampered 

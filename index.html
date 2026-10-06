@@ -1,0 +1,344 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TraceVision | MSDE Compliance Command Center</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-4 md:p-6 font-sans">
+  <div class="max-w-7xl mx-auto space-y-6">
+
+    <header class="flex flex-col md:flex-row justify-between items-start md:items-center bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-xl gap-4">
+      <div>
+        <div class="flex items-center gap-3">
+          <span class="relative flex h-3 w-3">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+          </span>
+          <h1 class="text-2xl font-black tracking-tight text-white uppercase">TraceVision <span class="text-emerald-400 font-mono text-sm tracking-normal font-normal">v2.0</span></h1>
+          <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-950 text-blue-400 border border-blue-800">DPDP Act 2023 Compliant</span>
+        </div>
+        <p class="text-xs md:text-sm text-slate-400 mt-1">Autonomous Edge Telemetry & Compliance Engine for MSDE Training Centres (SIH26245)</p>
+      </div>
+
+      <div class="flex items-center gap-2 flex-wrap">
+        <button onclick="toggleModal('how-it-works-modal')" class="bg-slate-800 hover:bg-slate-700 text-sky-400 border border-sky-900/60 font-medium text-xs md:text-sm px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm">
+          <span>How It Works</span>
+        </button>
+        <a href="/api/v1/export-report" download class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs md:text-sm px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-md">
+          <span>Download Audit CSV</span>
+        </a>
+        <a href="/docs" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs md:text-sm px-3 py-2 rounded-xl border border-slate-700 transition">API Docs</a>
+      </div>
+    </header>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl shadow-sm">
+        <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Attendance Rate</span>
+        <div class="flex items-baseline gap-2 mt-1.5">
+          <span id="kpi-compliance" class="text-3xl font-extrabold text-emerald-400">--%</span>
+          <span id="kpi-counts" class="text-xs text-slate-400">(-- / --)</span>
+        </div>
+        <div class="w-full bg-slate-800 rounded-full h-1.5 mt-3">
+          <div id="kpi-progress" class="bg-emerald-500 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div class="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl shadow-sm">
+        <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Lab Equipment Integrity</span>
+        <div class="mt-2">
+          <span id="kpi-equipment" class="text-base md:text-lg font-bold text-slate-200">VERIFYING...</span>
+        </div>
+        <p class="text-[11px] text-slate-500 mt-2">Workstations & Fire Kits</p>
+      </div>
+
+      <div class="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl shadow-sm">
+        <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Edge CCTV Health</span>
+        <div class="mt-2">
+          <span id="kpi-camera" class="text-base md:text-lg font-bold text-slate-200">HEALTHY</span>
+        </div>
+        <p class="text-[11px] text-slate-500 mt-2">Zero Tamper / Sub-15ms</p>
+      </div>
+
+      <div class="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl shadow-sm">
+        <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Bandwidth Usage</span>
+        <div class="flex items-baseline gap-2 mt-1.5">
+          <span id="kpi-payload" class="text-2xl font-bold text-sky-400">164 B</span>
+          <span class="text-xs text-emerald-400 font-mono">(Rural 2G/4G OK)</span>
+        </div>
+        <p class="text-[11px] text-slate-500 mt-2">Telemetry under 2 KB/min</p>
+      </div>
+    </div>
+
+    <div id="violation-card" class="hidden border border-red-800/80 bg-red-950/30 p-4 rounded-2xl text-red-200 shadow-md">
+      <div class="font-bold text-xs md:text-sm flex items-center gap-2 text-red-400">
+        <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
+        <span>Active Compliance Violations Detected:</span>
+      </div>
+      <ul id="violation-list" class="text-xs list-disc pl-5 mt-2 space-y-1 text-red-300"></ul>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2 bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <div>
+            <h2 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <span>Edge Vision Processing Feed</span>
+              <span class="text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded">LOCAL INFERENCE</span>
+            </h2>
+            <p class="text-xs text-slate-400">Anonymous spatial bounding boxes &mdash; zero raw video leaves training center</p>
+          </div>
+
+          <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-800 gap-1 text-xs">
+            <button onclick="switchZone('Classroom Feed (CAM-01)', 22)" class="px-2.5 py-1 rounded-lg font-medium text-slate-300 hover:text-white bg-slate-800 text-sky-400">Room 101</button>
+            <button onclick="switchZone('IT Computer Lab (CAM-02)', 20)" class="px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white">IT Lab</button>
+            <button onclick="switchZone('Biometric Entry Gate (CAM-03)', 1)" class="px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white">Gate Cam</button>
+          </div>
+        </div>
+
+        <div class="relative w-full aspect-video bg-slate-950 rounded-xl border border-slate-800 overflow-hidden flex items-center justify-center">
+          <canvas id="feedCanvas" width="640" height="360" class="w-full h-full object-cover"></canvas>
+          <div class="absolute top-3 left-3 bg-slate-950/80 backdrop-blur px-2.5 py-1 rounded-md text-[11px] font-mono text-emerald-400 border border-slate-800">
+            CAM: <span id="current-zone-name">Classroom Feed (CAM-01)</span> | FPS: 15.0
+          </div>
+          <div class="absolute top-3 right-3 bg-slate-950/80 backdrop-blur px-2.5 py-1 rounded-md text-[11px] font-mono text-sky-400 border border-slate-800">
+            PRIVACY: NO FACIAL RECOGNITION (DPDP-2023)
+          </div>
+          <div class="absolute bottom-3 left-3 bg-slate-950/80 backdrop-blur px-2.5 py-1 rounded-md text-[11px] font-mono text-slate-400 border border-slate-800">
+            DETECTED HEADS: <span id="canvas-head-count" class="text-emerald-400 font-bold">22</span> | BOUNDING CONTOURS: ACTIVE
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex flex-col justify-between space-y-4">
+        <div>
+          <div class="flex justify-between items-center mb-3">
+            <h2 class="text-sm font-bold text-white uppercase tracking-wider">Live Forensic Event Log</h2>
+            <span class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded">IMMUTABLE</span>
+          </div>
+          <div id="incident-log" class="space-y-2 max-h-56 overflow-y-auto pr-1 text-xs font-mono">
+            <div class="p-2 rounded bg-slate-950/60 border border-slate-800/80 text-emerald-400">
+              <span class="text-[10px] text-slate-500">[SYSTEM]</span> TraceVision Engine v2.0 initialized. DPDP compliance active.
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Uplink Telemetry Payload</span>
+            <span id="telemetry-time" class="text-[10px] text-slate-500">Live</span>
+          </div>
+          <pre id="json-viewer" class="bg-slate-950 p-2.5 rounded-xl text-[11px] font-mono text-emerald-400 border border-slate-800 max-h-36 overflow-x-auto">Telemetry syncing...</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xs md:text-sm font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+          <span>Live Jury Simulation Matrix</span>
+          <span class="text-[10px] bg-purple-950 text-purple-300 border border-purple-800 px-2 py-0.5 rounded font-normal">DYNAMIC STRESS TEST</span>
+        </h2>
+        <span class="text-xs text-slate-500 hidden sm:inline">Triggers real-time compliance rule engine responses</span>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <button onclick="simulate(22, true, false, 'Standard Class Session')" class="bg-slate-800/80 hover:bg-slate-800 border border-slate-700 hover:border-emerald-500 p-3 rounded-xl text-left transition">
+          <div class="text-xs font-bold text-emerald-400">Compliant Session</div>
+          <div class="text-[11px] text-slate-400 mt-1">22/25 Present (88%), Tools OK</div>
+        </button>
+
+        <button onclick="simulate(10, true, false, 'Ghost Batch Triggered: Capacity dropped to 40%')" class="bg-slate-800/80 hover:bg-slate-800 border border-slate-700 hover:border-amber-500 p-3 rounded-xl text-left transition">
+          <div class="text-xs font-bold text-amber-400">Ghost Batch Detection</div>
+          <div class="text-[11px] text-slate-400 mt-1">10/25 (40% - Under 70% Quota)</div>
+        </button>
+
+        <button onclick="simulate(22, false, false, 'Equipment Missing: Fire Safety Kit removed')" class="bg-slate-800/80 hover:bg-slate-800 border border-slate-700 hover:border-orange-500 p-3 rounded-xl text-left transition">
+          <div class="text-xs font-bold text-orange-400">Equipment Violation</div>
+          <div class="text-[11px] text-slate-400 mt-1">Safety kits / PCs moved</div>
+        </button>
+
+        <button onclick="simulate(0, true, true, 'Camera Occlusion / Feed Cut Detected')" class="bg-slate-800/80 hover:bg-slate-800 border border-slate-700 hover:border-red-500 p-3 rounded-xl text-left transition">
+          <div class="text-xs font-bold text-red-400">Tamper & Occlusion</div>
+          <div class="text-[11px] text-slate-400 mt-1">Camera lens covered or unplugged</div>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="how-it-works-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-4xl w-full p-6 space-y-6 shadow-2xl overflow-y-auto max-h-[90vh]">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <span>TraceVision: End-to-End System Pipeline</span>
+            <span class="text-xs bg-sky-950 text-sky-400 border border-sky-800 px-2.5 py-0.5 rounded-full">DPDP Act 2023 Compliant</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">How lightweight edge computer vision protects government scheme integrity</p>
+        </div>
+        <button onclick="toggleModal('how-it-works-modal')" class="text-slate-400 hover:text-white p-2 text-xl font-bold">&times;</button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
+        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+          <div class="w-8 h-8 rounded-lg bg-blue-600/20 text-blue-400 flex items-center justify-center font-bold">1</div>
+          <h3 class="font-bold text-white text-sm">CCTV Ingestion</h3>
+          <p class="text-slate-400 leading-relaxed">Pulls RTSP feeds from existing cameras across Classrooms, IT Labs, and Gates. No new hardware required.</p>
+        </div>
+
+        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-600/20 text-emerald-400 flex items-center justify-center font-bold">2</div>
+          <h3 class="font-bold text-white text-sm">Edge Inference</h3>
+          <p class="text-slate-400 leading-relaxed">Runs lightweight OpenCV spatial contour and head tracking locally on standard CPU hardware with sub-15 ms latency.</p>
+        </div>
+
+        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+          <div class="w-8 h-8 rounded-lg bg-purple-600/20 text-purple-400 flex items-center justify-center font-bold">3</div>
+          <h3 class="font-bold text-white text-sm">Data Minimization</h3>
+          <p class="text-slate-400 leading-relaxed">Zero facial recognition. Video is converted locally into encrypted JSON telemetry packets (under 2 KB/min), ideal for rural 2G/4G.</p>
+        </div>
+
+        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+          <div class="w-8 h-8 rounded-lg bg-amber-600/20 text-amber-400 flex items-center justify-center font-bold">4</div>
+          <h3 class="font-bold text-white text-sm">Automated Audit</h3>
+          <p class="text-slate-400 leading-relaxed">Cloud compliance engine compares headcounts against batch rosters and outputs one-click verifiable CSV dossiers for fund clearance.</p>
+        </div>
+      </div>
+
+      <div class="flex justify-end">
+        <button onclick="toggleModal('how-it-works-modal')" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-5 py-2.5 rounded-xl font-medium transition">Close Overview</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentHeadcount = 22;
+    let isTampered = false;
+
+    function toggleModal(id) {
+      document.getElementById(id).classList.toggle('hidden');
+    }
+
+    function switchZone(name, count) {
+      document.getElementById('current-zone-name').innerText = name;
+      simulate(count, true, false, 'Switched view to ' + name);
+    }
+
+    function drawCanvasHUD() {
+      const canvas = document.getElementById('feedCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (isTampered) {
+        ctx.fillStyle = '#050505';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#ef4444';
+        ctx.font = 'bold 16px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('CAMERA FEED OCCLUDED / TAMPER DETECTED', canvas.width / 2, canvas.height / 2);
+        return;
+      }
+
+      ctx.fillStyle = '#090d16';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const cols = 6;
+      const rows = Math.ceil(currentHeadcount / cols);
+      let drawn = 0;
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          if (drawn >= currentHeadcount) break;
+          const x = 50 + c * 95;
+          const y = 50 + r * 85;
+
+          ctx.strokeStyle = '#10b981';
+          ctx.lineWidth = 1.5;
+          ctx.strokeRect(x, y, 42, 42);
+
+          ctx.fillStyle = '#34d399';
+          ctx.beginPath();
+          ctx.arc(x + 21, y + 21, 3, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = '#10b981';
+          ctx.font = '8px monospace';
+          ctx.fillText('ID:' + (100 + drawn), x, y - 4);
+          drawn++;
+        }
+      }
+      const countEl = document.getElementById('canvas-head-count');
+      if (countEl) countEl.innerText = currentHeadcount;
+    }
+
+    function addLogEntry(message, type) {
+      const log = document.getElementById('incident-log');
+      if (!log) return;
+      const time = new Date().toLocaleTimeString();
+      const color = type === 'alert' ? 'text-red-400 border-red-900/60 bg-red-950/40' : 'text-emerald-400 border-slate-800 bg-slate-950/60';
+      const entry = '<div class="p-2 rounded border ' + color + '"><span class="text-[10px] text-slate-500">[' + time + ']</span> ' + message + '</div>';
+      log.insertAdjacentHTML('afterbegin', entry);
+    }
+
+    async function fetchTelemetry() {
+      try {
+        const res = await fetch('/api/v1/telemetry');
+        const data = await res.json();
+        
+        currentHeadcount = data.detected_headcount;
+        isTampered = data.camera_health !== 'HEALTHY';
+        drawCanvasHUD();
+
+        document.getElementById('kpi-compliance').innerText = data.compliance_percentage + '%';
+        document.getElementById('kpi-compliance').className = 'text-3xl font-extrabold ' + (data.compliance_percentage >= 70 ? 'text-emerald-400' : 'text-red-400');
+        document.getElementById('kpi-counts').innerText = '(' + data.detected_headcount + ' / ' + data.enrolled_capacity + ')';
+        document.getElementById('kpi-progress').style.width = Math.min(data.compliance_percentage, 100) + '%';
+        document.getElementById('kpi-progress').className = 'h-1.5 rounded-full transition-all duration-500 ' + (data.compliance_percentage >= 70 ? 'bg-emerald-500' : 'bg-red-500');
+
+        document.getElementById('kpi-equipment').innerText = data.equipment_status;
+        document.getElementById('kpi-equipment').className = 'text-base md:text-lg font-bold ' + (data.equipment_status === 'VERIFIED' ? 'text-emerald-400' : 'text-amber-400');
+
+        document.getElementById('kpi-camera').innerText = data.camera_health;
+        document.getElementById('kpi-camera').className = 'text-base md:text-lg font-bold ' + (data.camera_health === 'HEALTHY' ? 'text-emerald-400' : 'text-red-400');
+
+        document.getElementById('kpi-payload').innerText = data.payload_size_bytes + ' B';
+        document.getElementById('telemetry-time').innerText = 'Sync: ' + data.timestamp.split('T')[1].split('.')[0] + 'Z';
+        document.getElementById('json-viewer').innerText = JSON.stringify(data, null, 2);
+
+        const vCard = document.getElementById('violation-card');
+        const vList = document.getElementById('violation-list');
+        if (data.violations && data.violations.length > 0) {
+          vCard.classList.remove('hidden');
+          vList.innerHTML = data.violations.map(v => '<li>' + v + '</li>').join('');
+        } else {
+          vCard.classList.add('hidden');
+        }
+      } catch (e) {
+        console.error('Telemetry error:', e);
+      }
+    }
+
+    async function simulate(headcount, equipment, tampered, logMsg) {
+      await fetch('/api/v1/simulate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          detected_headcount: headcount,
+          mandatory_equipment_present: equipment,
+          camera_tampered: tampered
+        })
+      });
+      if (logMsg) {
+        addLogEntry(logMsg, (!equipment || tampered || headcount < 18) ? 'alert' : 'info');
+      }
+      fetchTelemetry();
+    }
+
+    setInterval(fetchTelemetry, 3000);
+    fetchTelemetry();
+  </script>
+</body>
+</html>
