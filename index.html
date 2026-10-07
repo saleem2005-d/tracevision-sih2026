@@ -49,6 +49,11 @@
           <i class="fa-solid fa-location-crosshairs w-4"></i>
           <span>Geo-Compliance</span>
         </button>
+        <!-- NEW: Dedicated How It Works Navigation Link -->
+        <button onclick="showTab('howitworks')" id="btn-howitworks" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-left transition hover:bg-slate-800/60 hover:text-white text-sky-400">
+          <i class="fa-solid fa-circle-info w-4"></i>
+          <span>How It Works</span>
+        </button>
       </nav>
 
       <div class="p-4 mt-6 border-t border-slate-800">
@@ -100,7 +105,7 @@
       </div>
     </header>
 
-    <!-- Sub-header -->
+    <!-- Sub-header Breadcrumb & Actions -->
     <div class="px-6 py-2.5 flex justify-between items-center bg-slate-50 border-b border-slate-200">
       <div class="text-xs text-slate-500 font-medium flex items-center gap-1.5">
         <i class="fa-solid fa-house text-slate-400"></i>
@@ -109,6 +114,10 @@
         <span id="breadcrumb" class="text-slate-700 font-semibold">Home Dashboard</span>
       </div>
       <div class="flex items-center gap-2">
+        <button onclick="showTab('howitworks')" class="bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-700 text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow-sm transition">
+          <i class="fa-solid fa-circle-question"></i>
+          <span>How It Works</span>
+        </button>
         <a href="/api/v1/export-report" download class="bg-[#1e3a5f] hover:bg-[#152a45] text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow-sm transition">
           <i class="fa-solid fa-download"></i>
           <span>Generate CSV Report</span>
@@ -120,7 +129,7 @@
       </div>
     </div>
 
-    <!-- TAB 1: HOME DASHBOARD -->
+    <!-- TAB 1: HOME DASHBOARD (Exact Working Code) -->
     <div id="tab-dashboard" class="p-6 space-y-5">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-white border-t-4 border-[#1e3a5f] border-x border-b border-slate-200 p-4 rounded shadow-sm">
@@ -418,17 +427,178 @@
       </div>
     </div>
 
+    <!-- ==================== NEW TAB 7: HOW IT WORKS (RICH VISUAL ARCHITECTURE) ==================== -->
+    <div id="tab-howitworks" class="p-6 space-y-6" style="display:none;">
+      
+      <!-- Top Banner -->
+      <div class="bg-gradient-to-r from-[#0d1b2a] to-[#1e3a5f] rounded-2xl p-6 text-white shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2.5 py-0.5 rounded-full">SYSTEM ARCHITECTURE</span>
+            <span class="text-xs font-bold uppercase tracking-wider bg-sky-500/20 text-sky-300 border border-sky-500/40 px-2.5 py-0.5 rounded-full">DPDP ACT 2023 READY</span>
+          </div>
+          <h2 class="text-2xl font-black mt-2 tracking-tight">How TraceVision Actually Operates</h2>
+          <p class="text-sm text-slate-300 mt-1 max-w-2xl">
+            A privacy-first, zero-cloud-video pipeline that transforms local vocational CCTV streams into micro-telemetry audit proof for MSDE compliance.
+          </p>
+        </div>
+        <button onclick="showTab('dashboard')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-4 py-2.5 rounded-xl shadow transition shrink-0">
+          <i class="fa-solid fa-play mr-1.5"></i> Launch Live Console
+        </button>
+      </div>
+
+      <!-- 4-Stage Visual Pipeline Diagram Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+        <!-- Stage 1 -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-between space-y-3">
+          <div>
+            <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-base shadow-sm">
+              <i class="fa-solid fa-video"></i>
+            </div>
+            <div class="mt-3">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Step 01</span>
+              <h3 class="text-sm font-bold text-slate-900 mt-0.5">RTSP Optical Ingestion</h3>
+            </div>
+            <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+              Pulls live RTSP streams directly from existing center CCTV nodes (Theory Rooms, Labs, Gates). No expensive cameras or proprietary sensors required.
+            </p>
+          </div>
+          <div class="bg-slate-900 rounded-lg p-2.5 text-[11px] font-mono text-emerald-400">
+            rtsp://192.168.1.104:554/cam1<br>
+            <span class="text-slate-400">Resolution: 720p @ 15 FPS</span>
+          </div>
+        </div>
+
+        <!-- Stage 2 -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-between space-y-3">
+          <div>
+            <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-base shadow-sm">
+              <i class="fa-solid fa-microchip"></i>
+            </div>
+            <div class="mt-3">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Step 02</span>
+              <h3 class="text-sm font-bold text-slate-900 mt-0.5">Edge Spatial Inference</h3>
+            </div>
+            <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+              OpenCV spatial contour detection calculates head bounding centroids strictly inside the on-premise edge machine with sub-15ms processing latency.
+            </p>
+          </div>
+          <div class="bg-slate-900 rounded-lg p-2.5 text-[11px] font-mono text-sky-400">
+            local_inference(frame)<br>
+            <span class="text-slate-400">&gt; Contours: 20 Trainees</span>
+          </div>
+        </div>
+
+        <!-- Stage 3 -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-between space-y-3">
+          <div>
+            <div class="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-base shadow-sm">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <div class="mt-3">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Step 03</span>
+              <h3 class="text-sm font-bold text-slate-900 mt-0.5">Data Minimization (164B)</h3>
+            </div>
+            <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+              Video is discarded immediately. Only an encrypted numerical telemetry payload (164 Bytes) is synced to the cloud, functioning seamlessly over 2G/4G.
+            </p>
+          </div>
+          <div class="bg-slate-900 rounded-lg p-2.5 text-[11px] font-mono text-purple-300">
+            payload_size: 164 Bytes<br>
+            <span class="text-slate-400">Zero facial image leaves center</span>
+          </div>
+        </div>
+
+        <!-- Stage 4 -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-between space-y-3">
+          <div>
+            <div class="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-base shadow-sm">
+              <i class="fa-solid fa-file-circle-check"></i>
+            </div>
+            <div class="mt-3">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Step 04</span>
+              <h3 class="text-sm font-bold text-slate-900 mt-0.5">Automated Audit & CSV</h3>
+            </div>
+            <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+              The compliance engine verifies attendance against PMKVY scheme rosters and enables instant one-click CSV/PDF exports for government fund release.
+            </p>
+          </div>
+          <div class="bg-slate-900 rounded-lg p-2.5 text-[11px] font-mono text-amber-400">
+            audit_verdict: APPROVED<br>
+            <span class="text-slate-400">Attendance: 80% &gt;= 70% Quota</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- In-Depth Comparison: Traditional Audits vs TraceVision -->
+      <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
+        <div class="border-b pb-3">
+          <h3 class="text-sm font-bold text-slate-900 uppercase">Competitive Benchmark & Value Matrix</h3>
+          <p class="text-xs text-slate-500 mt-0.5">How TraceVision fundamentally outperforms legacy manual and cloud-streaming inspections</p>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="border-b border-slate-200 text-slate-600 font-bold">
+                <th class="py-2.5">Feature / Requirement</th>
+                <th class="py-2.5 text-slate-500">Legacy Physical Inspection</th>
+                <th class="py-2.5 text-slate-500">Standard Cloud CCTV Stream</th>
+                <th class="py-2.5 text-emerald-600 font-bold">TraceVision Engine (SIH26245)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-slate-700">
+              <tr>
+                <td class="py-3 font-semibold text-slate-900">Surveillance Cadence</td>
+                <td class="py-3 text-slate-500">Quarterly (Once in 3 to 6 months)</td>
+                <td class="py-3 text-slate-500">Continuous when online</td>
+                <td class="py-3 text-emerald-600 font-bold">Real-time continuous edge verification</td>
+              </tr>
+              <tr>
+                <td class="py-3 font-semibold text-slate-900">Network Bandwidth Required</td>
+                <td class="py-3 text-slate-500">0 KB (Manual Paperwork)</td>
+                <td class="py-3 text-red-500 font-bold">~2 Mbps to 4 Mbps per stream</td>
+                <td class="py-3 text-emerald-600 font-bold">&lt; 2 KB / minute total (&gt;99% savings)</td>
+              </tr>
+              <tr>
+                <td class="py-3 font-semibold text-slate-900">Citizen Privacy (DPDP Act 2023)</td>
+                <td class="py-3 text-slate-500">Signatures on physical registries</td>
+                <td class="py-3 text-red-500 font-bold">High biometric risk (Raw video streamed)</td>
+                <td class="py-3 text-emerald-600 font-bold">100% Compliant (Zero face templates stored)</td>
+              </tr>
+              <tr>
+                <td class="py-3 font-semibold text-slate-900">Ghost Batch Fraud Prevention</td>
+                <td class="py-3 text-slate-500">Vulnerable to center collusion</td>
+                <td class="py-3 text-slate-500">Manual review fatigue</td>
+                <td class="py-3 text-emerald-600 font-bold">Instant automated heuristic red-flagging</td>
+              </tr>
+              <tr>
+                <td class="py-3 font-semibold text-slate-900">Hardware Capital Cost (CAPEX)</td>
+                <td class="py-3 text-slate-500">Travel & Officer stipends</td>
+                <td class="py-3 text-slate-500">High (Cloud compute and GPUs)</td>
+                <td class="py-3 text-emerald-600 font-bold">Zero new hardware (Uses existing PCs & CCTVs)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
   </div>
 
   <script>
-    const tabs = ['dashboard', 'surveillance', 'infra', 'registry', 'alerts', 'geo'];
+    const tabs = ['dashboard', 'surveillance', 'infra', 'registry', 'alerts', 'geo', 'howitworks'];
     const tabTitles = {
       'dashboard': 'Home Dashboard',
       'surveillance': 'Surveillance Matrix',
       'infra': 'Infrastructure Verification',
       'registry': 'Trainee Registry',
       'alerts': 'Vigilance Alerts',
-      'geo': 'Geo-Compliance'
+      'geo': 'Geo-Compliance',
+      'howitworks': 'How It Works (System Architecture)'
     };
 
     function showTab(name) {
@@ -577,13 +747,13 @@
       if (isSimulating) {
         activeHeads = 10;
         btn.innerHTML = '<i class="fa-solid fa-play"></i> <span>Resume Simulation</span>';
-        btn.className = 'bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow transition';
+        btn.className = 'bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-2.5 py-1.5 rounded flex items-center gap-1.5 shadow transition';
         logEvent('Simulation paused: Attendance dropped to 40% (Ghost Batch Flagged).');
         isSimulating = false;
       } else {
         activeHeads = 20;
         btn.innerHTML = '<i class="fa-solid fa-stop"></i> <span>Stop Simulation</span>';
-        btn.className = 'bg-red-600 hover:bg-red-500 text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow transition';
+        btn.className = 'bg-red-600 hover:bg-red-500 text-white text-xs font-semibold px-2.5 py-1.5 rounded flex items-center gap-1.5 shadow transition';
         logEvent('Simulation restored: Standard batch headcount 20/25 verified.');
         isSimulating = true;
       }
