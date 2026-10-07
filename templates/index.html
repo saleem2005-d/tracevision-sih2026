@@ -8,79 +8,140 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    
+    /* Smooth width & text transition */
+    #mainSidebar {
+      transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .sidebar-collapsed .nav-text,
+    .sidebar-collapsed .sidebar-header-text,
+    .sidebar-collapsed .sidebar-footer-text,
+    .sidebar-collapsed .section-label {
+      display: none !important;
+    }
+    .sidebar-collapsed .nav-btn {
+      justify-content: center !important;
+      padding-left: 0.5rem !important;
+      padding-right: 0.5rem !important;
+    }
+    .sidebar-collapsed .badge-pill {
+      display: none !important;
+    }
+    
+    /* Active indicator */
     .nav-btn.active {
-      background-color: #1e3a5f !important;
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.2) 0%, rgba(14, 165, 233, 0.05) 100%) !important;
       border-left: 4px solid #38bdf8 !important;
-      color: #ffffff !important;
+      color: #38bdf8 !important;
+      font-weight: 600;
     }
   </style>
 </head>
 <body class="bg-slate-100 text-slate-800 flex h-screen overflow-hidden">
 
-  <!-- Left Sidebar -->
-  <aside class="w-64 bg-[#0d1b2a] text-slate-300 flex flex-col justify-between shrink-0 select-none">
+  <!-- Enhanced Collapsible Sidebar -->
+  <aside id="mainSidebar" class="w-64 bg-[#0a1424] text-slate-300 flex flex-col justify-between shrink-0 select-none border-r border-slate-800/80 shadow-2xl relative z-30">
+    
+    <!-- Top Brand & Collapse Trigger -->
     <div>
-      <div class="p-4 border-b border-slate-800">
-        <span class="text-[10px] uppercase tracking-wider font-semibold text-slate-400">Navigation Menu</span>
+      <div class="h-16 px-4 border-b border-slate-800/80 flex items-center justify-between">
+        <div class="flex items-center gap-3 overflow-hidden">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-orange-600 to-amber-500 flex items-center justify-center text-white font-bold text-lg shadow-md shrink-0">
+            <i class="fa-solid fa-cube"></i>
+          </div>
+          <div class="sidebar-header-text">
+            <div class="text-sm font-extrabold tracking-wider text-white">TRACEVISION</div>
+            <div class="text-[10px] text-sky-400 font-mono tracking-tight">AI VISION SUITE</div>
+          </div>
+        </div>
+        <!-- Collapse / Expand Icon Button -->
+        <button onclick="toggleSidebarCollapse()" id="collapseBtn" title="Toggle Sidebar (Key: [ )" class="w-7 h-7 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition border border-slate-700/60 shadow-sm shrink-0">
+          <i id="collapseIcon" class="fa-solid fa-chevron-left text-xs transition-transform duration-200"></i>
+        </button>
       </div>
 
-      <nav class="mt-2 space-y-1 text-sm font-medium">
-        <button onclick="showTab('dashboard')" id="btn-dashboard" class="nav-btn active w-full flex items-center gap-3 px-4 py-3 text-left transition hover:bg-slate-800/60 hover:text-white">
-          <i class="fa-solid fa-house w-4"></i>
-          <span>Home Dashboard</span>
+      <!-- Navigation Section -->
+      <div class="px-3 py-3">
+        <span class="section-label text-[10px] uppercase font-bold tracking-wider text-slate-500 px-3">Main Navigation</span>
+      </div>
+
+      <nav class="space-y-1 px-2 text-xs font-medium">
+        <button onclick="showTab('dashboard')" id="btn-dashboard" title="Home Dashboard" class="nav-btn active w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-left transition hover:bg-slate-800/60 hover:text-white">
+          <i class="fa-solid fa-gauge-high w-4 text-center text-slate-400 group-hover:text-white text-sm"></i>
+          <span class="nav-text">Home Dashboard</span>
         </button>
-        <button onclick="showTab('surveillance')" id="btn-surveillance" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-left transition hover:bg-slate-800/60 hover:text-white">
-          <i class="fa-solid fa-video w-4"></i>
-          <span>Surveillance Matrix</span>
+
+        <button onclick="showTab('surveillance')" id="btn-surveillance" title="Surveillance Matrix" class="nav-btn w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-left transition hover:bg-slate-800/60 hover:text-white">
+          <i class="fa-solid fa-video w-4 text-center text-slate-400 text-sm"></i>
+          <span class="nav-text">Surveillance Matrix</span>
+          <span class="badge-pill ml-auto text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800">4 CAM</span>
         </button>
-        <button onclick="showTab('infra')" id="btn-infra" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-left transition hover:bg-slate-800/60 hover:text-white">
-          <i class="fa-solid fa-list-check w-4"></i>
-          <span>Infra Verification</span>
+
+        <button onclick="showTab('infra')" id="btn-infra" title="Infra Verification" class="nav-btn w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-left transition hover:bg-slate-800/60 hover:text-white">
+          <i class="fa-solid fa-list-check w-4 text-center text-slate-400 text-sm"></i>
+          <span class="nav-text">Infra Verification</span>
         </button>
-        <button onclick="showTab('registry')" id="btn-registry" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-left transition hover:bg-slate-800/60 hover:text-white">
-          <i class="fa-solid fa-users w-4"></i>
-          <span>Trainee Registry</span>
+
+        <button onclick="showTab('registry')" id="btn-registry" title="Trainee Registry" class="nav-btn w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-left transition hover:bg-slate-800/60 hover:text-white">
+          <i class="fa-solid fa-users w-4 text-center text-slate-400 text-sm"></i>
+          <span class="nav-text">Trainee Registry</span>
+          <span class="badge-pill ml-auto text-[9px] font-mono px-1.5 py-0.5 rounded bg-sky-950 text-sky-400 border border-sky-800">25</span>
         </button>
-        <button onclick="showTab('alerts')" id="btn-alerts" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-left transition hover:bg-slate-800/60 hover:text-white">
-          <i class="fa-solid fa-triangle-exclamation w-4"></i>
-          <span>Vigilance Alerts</span>
+
+        <button onclick="showTab('alerts')" id="btn-alerts" title="Vigilance Alerts" class="nav-btn w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-left transition hover:bg-slate-800/60 hover:text-white">
+          <i class="fa-solid fa-shield-halved w-4 text-center text-slate-400 text-sm"></i>
+          <span class="nav-text">Vigilance Alerts</span>
         </button>
-        <button onclick="showTab('geo')" id="btn-geo" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-left transition hover:bg-slate-800/60 hover:text-white">
-          <i class="fa-solid fa-location-crosshairs w-4"></i>
-          <span>Geo-Compliance</span>
+
+        <button onclick="showTab('geo')" id="btn-geo" title="Geo-Compliance" class="nav-btn w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-left transition hover:bg-slate-800/60 hover:text-white">
+          <i class="fa-solid fa-location-crosshairs w-4 text-center text-slate-400 text-sm"></i>
+          <span class="nav-text">Geo-Compliance</span>
         </button>
-        <!-- NEW: Dedicated How It Works Navigation Link -->
-        <button onclick="showTab('howitworks')" id="btn-howitworks" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-left transition hover:bg-slate-800/60 hover:text-white text-sky-400">
-          <i class="fa-solid fa-circle-info w-4"></i>
-          <span>How It Works</span>
+
+        <button onclick="showTab('howitworks')" id="btn-howitworks" title="How It Works" class="nav-btn w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-left transition hover:bg-slate-800/60 hover:text-sky-300 text-sky-400">
+          <i class="fa-solid fa-circle-question w-4 text-center text-sky-400 text-sm"></i>
+          <span class="nav-text font-semibold">How It Works</span>
         </button>
       </nav>
 
-      <div class="p-4 mt-6 border-t border-slate-800">
-        <span class="text-[10px] uppercase tracking-wider font-semibold text-slate-400">Inspection Exports</span>
-        <div class="mt-2 space-y-1 text-sm font-medium">
-          <a href="/api/v1/export-report" download class="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-800/60 hover:text-white text-slate-300 rounded transition">
-            <i class="fa-solid fa-file-csv w-4"></i>
-            <span>Export Audit CSV</span>
-          </a>
-          <button onclick="window.print()" class="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-800/60 hover:text-white text-slate-300 rounded transition text-left">
-            <i class="fa-solid fa-print w-4"></i>
-            <span>Print Inspection Form</span>
-          </button>
-        </div>
+      <!-- Inspection Exports Sub-Menu -->
+      <div class="px-3 pt-5 pb-2">
+        <span class="section-label text-[10px] uppercase font-bold tracking-wider text-slate-500 px-3">Audit Tools</span>
+      </div>
+
+      <div class="space-y-1 px-2 text-xs font-medium">
+        <a href="/api/v1/export-report" download title="Export Audit CSV" class="nav-btn flex items-center gap-3.5 px-3 py-2.5 rounded-xl hover:bg-slate-800/60 hover:text-white text-slate-300 transition">
+          <i class="fa-solid fa-file-csv w-4 text-center text-emerald-400 text-sm"></i>
+          <span class="nav-text">Export Audit CSV</span>
+        </a>
+        <button onclick="window.print()" title="Print Inspection Dossier" class="nav-btn w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl hover:bg-slate-800/60 hover:text-white text-slate-300 transition text-left">
+          <i class="fa-solid fa-print w-4 text-center text-slate-400 text-sm"></i>
+          <span class="nav-text">Print Dossier</span>
+        </button>
       </div>
     </div>
 
-    <div class="p-4 text-[11px] text-slate-400 border-t border-slate-800">
-      <div>TraceVision AI Core</div>
-      <div>Status: <span class="text-emerald-400 font-medium">Ready for Evaluation</span></div>
+    <!-- Bottom Node Health Status Widget -->
+    <div class="p-3 border-t border-slate-800/80 bg-slate-950/40">
+      <div class="flex items-center gap-2.5">
+        <span class="relative flex h-2.5 w-2.5 shrink-0">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+        </span>
+        <div class="sidebar-footer-text overflow-hidden">
+          <div class="text-[11px] font-bold text-slate-200 truncate">ANANTAPUR NODE</div>
+          <div class="text-[10px] text-emerald-400 font-mono flex items-center gap-1">
+            <span>EDGE ACTIVE</span> &bull; <span>11ms</span>
+          </div>
+        </div>
+      </div>
     </div>
   </aside>
 
-  <!-- Right Viewport -->
-  <div class="flex-1 flex flex-col overflow-y-auto w-full min-w-0">
+  <!-- Right Viewport Area -->
+  <div class="flex-1 flex flex-col overflow-y-auto w-full min-w-0 bg-slate-100">
 
-    <!-- Header -->
+    <!-- Top App Header -->
     <header class="bg-white border-b border-slate-200 px-6 py-3 flex justify-between items-center shadow-sm">
       <div class="flex items-center gap-3">
         <div class="w-9 h-9 rounded-lg bg-orange-600 flex items-center justify-center text-white font-bold text-xl shadow">
@@ -129,7 +190,7 @@
       </div>
     </div>
 
-    <!-- TAB 1: HOME DASHBOARD (Exact Working Code) -->
+    <!-- TAB 1: HOME DASHBOARD -->
     <div id="tab-dashboard" class="p-6 space-y-5">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-white border-t-4 border-[#1e3a5f] border-x border-b border-slate-200 p-4 rounded shadow-sm">
@@ -427,10 +488,8 @@
       </div>
     </div>
 
-    <!-- ==================== NEW TAB 7: HOW IT WORKS (RICH VISUAL ARCHITECTURE) ==================== -->
+    <!-- TAB 7: HOW IT WORKS -->
     <div id="tab-howitworks" class="p-6 space-y-6" style="display:none;">
-      
-      <!-- Top Banner -->
       <div class="bg-gradient-to-r from-[#0d1b2a] to-[#1e3a5f] rounded-2xl p-6 text-white shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <div class="flex items-center gap-2">
@@ -447,10 +506,7 @@
         </button>
       </div>
 
-      <!-- 4-Stage Visual Pipeline Diagram Cards -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-
-        <!-- Stage 1 -->
         <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-between space-y-3">
           <div>
             <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-base shadow-sm">
@@ -470,7 +526,6 @@
           </div>
         </div>
 
-        <!-- Stage 2 -->
         <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-between space-y-3">
           <div>
             <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-base shadow-sm">
@@ -490,7 +545,6 @@
           </div>
         </div>
 
-        <!-- Stage 3 -->
         <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-between space-y-3">
           <div>
             <div class="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-base shadow-sm">
@@ -510,7 +564,6 @@
           </div>
         </div>
 
-        <!-- Stage 4 -->
         <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-between space-y-3">
           <div>
             <div class="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-base shadow-sm">
@@ -529,16 +582,13 @@
             <span class="text-slate-400">Attendance: 80% &gt;= 70% Quota</span>
           </div>
         </div>
-
       </div>
 
-      <!-- In-Depth Comparison: Traditional Audits vs TraceVision -->
       <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
         <div class="border-b pb-3">
           <h3 class="text-sm font-bold text-slate-900 uppercase">Competitive Benchmark & Value Matrix</h3>
           <p class="text-xs text-slate-500 mt-0.5">How TraceVision fundamentally outperforms legacy manual and cloud-streaming inspections</p>
         </div>
-
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs border-collapse">
             <thead>
@@ -574,22 +624,16 @@
                 <td class="py-3 text-slate-500">Manual review fatigue</td>
                 <td class="py-3 text-emerald-600 font-bold">Instant automated heuristic red-flagging</td>
               </tr>
-              <tr>
-                <td class="py-3 font-semibold text-slate-900">Hardware Capital Cost (CAPEX)</td>
-                <td class="py-3 text-slate-500">Travel & Officer stipends</td>
-                <td class="py-3 text-slate-500">High (Cloud compute and GPUs)</td>
-                <td class="py-3 text-emerald-600 font-bold">Zero new hardware (Uses existing PCs & CCTVs)</td>
-              </tr>
             </tbody>
           </table>
         </div>
       </div>
-
     </div>
 
   </div>
 
   <script>
+    // Navigation routing logic
     const tabs = ['dashboard', 'surveillance', 'infra', 'registry', 'alerts', 'geo', 'howitworks'];
     const tabTitles = {
       'dashboard': 'Home Dashboard',
@@ -612,6 +656,37 @@
         }
       });
       document.getElementById('breadcrumb').innerText = tabTitles[name] || 'Dashboard';
+    }
+
+    // Sidebar Collapse/Expand Manager
+    function toggleSidebarCollapse() {
+      const sidebar = document.getElementById('mainSidebar');
+      const icon = document.getElementById('collapseIcon');
+      const isCollapsed = sidebar.classList.contains('sidebar-collapsed');
+
+      if (isCollapsed) {
+        sidebar.classList.remove('sidebar-collapsed', 'w-20');
+        sidebar.classList.add('w-64');
+        icon.className = 'fa-solid fa-chevron-left text-xs';
+        localStorage.setItem('sidebar_collapsed', 'false');
+      } else {
+        sidebar.classList.add('sidebar-collapsed', 'w-20');
+        sidebar.classList.remove('w-64');
+        icon.className = 'fa-solid fa-chevron-right text-xs';
+        localStorage.setItem('sidebar_collapsed', 'true');
+      }
+    }
+
+    // Keyboard shortcut '[' to toggle sidebar
+    window.addEventListener('keydown', (e) => {
+      if (e.key === '[' && !['INPUT', 'TEXTAREA'].includes(e.target.tagName)) {
+        toggleSidebarCollapse();
+      }
+    });
+
+    // Restore state from localStorage
+    if (localStorage.getItem('sidebar_collapsed') === 'true') {
+      toggleSidebarCollapse();
     }
 
     let activeHeads = 20;
@@ -747,13 +822,13 @@
       if (isSimulating) {
         activeHeads = 10;
         btn.innerHTML = '<i class="fa-solid fa-play"></i> <span>Resume Simulation</span>';
-        btn.className = 'bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-2.5 py-1.5 rounded flex items-center gap-1.5 shadow transition';
+        btn.className = 'bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow transition';
         logEvent('Simulation paused: Attendance dropped to 40% (Ghost Batch Flagged).');
         isSimulating = false;
       } else {
         activeHeads = 20;
         btn.innerHTML = '<i class="fa-solid fa-stop"></i> <span>Stop Simulation</span>';
-        btn.className = 'bg-red-600 hover:bg-red-500 text-white text-xs font-semibold px-2.5 py-1.5 rounded flex items-center gap-1.5 shadow transition';
+        btn.className = 'bg-red-600 hover:bg-red-500 text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow transition';
         logEvent('Simulation restored: Standard batch headcount 20/25 verified.');
         isSimulating = true;
       }
