@@ -8,8 +8,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    
-    /* Smooth width & text transition */
     #mainSidebar {
       transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -27,8 +25,6 @@
     .sidebar-collapsed .badge-pill {
       display: none !important;
     }
-    
-    /* Active indicator */
     .nav-btn.active {
       background: linear-gradient(90deg, rgba(56, 189, 248, 0.2) 0%, rgba(14, 165, 233, 0.05) 100%) !important;
       border-left: 4px solid #38bdf8 !important;
@@ -39,10 +35,8 @@
 </head>
 <body class="bg-slate-100 text-slate-800 flex h-screen overflow-hidden">
 
-  <!-- Enhanced Collapsible Sidebar -->
+  <!-- Collapsible Sidebar -->
   <aside id="mainSidebar" class="w-64 bg-[#0a1424] text-slate-300 flex flex-col justify-between shrink-0 select-none border-r border-slate-800/80 shadow-2xl relative z-30">
-    
-    <!-- Top Brand & Collapse Trigger -->
     <div>
       <div class="h-16 px-4 border-b border-slate-800/80 flex items-center justify-between">
         <div class="flex items-center gap-3 overflow-hidden">
@@ -54,20 +48,18 @@
             <div class="text-[10px] text-sky-400 font-mono tracking-tight">AI VISION SUITE</div>
           </div>
         </div>
-        <!-- Collapse / Expand Icon Button -->
         <button onclick="toggleSidebarCollapse()" id="collapseBtn" title="Toggle Sidebar (Key: [ )" class="w-7 h-7 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition border border-slate-700/60 shadow-sm shrink-0">
           <i id="collapseIcon" class="fa-solid fa-chevron-left text-xs transition-transform duration-200"></i>
         </button>
       </div>
 
-      <!-- Navigation Section -->
       <div class="px-3 py-3">
         <span class="section-label text-[10px] uppercase font-bold tracking-wider text-slate-500 px-3">Main Navigation</span>
       </div>
 
       <nav class="space-y-1 px-2 text-xs font-medium">
         <button onclick="showTab('dashboard')" id="btn-dashboard" title="Home Dashboard" class="nav-btn active w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-left transition hover:bg-slate-800/60 hover:text-white">
-          <i class="fa-solid fa-gauge-high w-4 text-center text-slate-400 group-hover:text-white text-sm"></i>
+          <i class="fa-solid fa-gauge-high w-4 text-center text-slate-400 text-sm"></i>
           <span class="nav-text">Home Dashboard</span>
         </button>
 
@@ -104,7 +96,6 @@
         </button>
       </nav>
 
-      <!-- Inspection Exports Sub-Menu -->
       <div class="px-3 pt-5 pb-2">
         <span class="section-label text-[10px] uppercase font-bold tracking-wider text-slate-500 px-3">Audit Tools</span>
       </div>
@@ -121,7 +112,6 @@
       </div>
     </div>
 
-    <!-- Bottom Node Health Status Widget -->
     <div class="p-3 border-t border-slate-800/80 bg-slate-950/40">
       <div class="flex items-center gap-2.5">
         <span class="relative flex h-2.5 w-2.5 shrink-0">
@@ -138,10 +128,9 @@
     </div>
   </aside>
 
-  <!-- Right Viewport Area -->
+  <!-- Right Viewport -->
   <div class="flex-1 flex flex-col overflow-y-auto w-full min-w-0 bg-slate-100">
 
-    <!-- Top App Header -->
     <header class="bg-white border-b border-slate-200 px-6 py-3 flex justify-between items-center shadow-sm">
       <div class="flex items-center gap-3">
         <div class="w-9 h-9 rounded-lg bg-orange-600 flex items-center justify-center text-white font-bold text-xl shadow">
@@ -166,7 +155,6 @@
       </div>
     </header>
 
-    <!-- Sub-header Breadcrumb & Actions -->
     <div class="px-6 py-2.5 flex justify-between items-center bg-slate-50 border-b border-slate-200">
       <div class="text-xs text-slate-500 font-medium flex items-center gap-1.5">
         <i class="fa-solid fa-house text-slate-400"></i>
@@ -633,7 +621,6 @@
   </div>
 
   <script>
-    // Navigation routing logic
     const tabs = ['dashboard', 'surveillance', 'infra', 'registry', 'alerts', 'geo', 'howitworks'];
     const tabTitles = {
       'dashboard': 'Home Dashboard',
@@ -658,7 +645,6 @@
       document.getElementById('breadcrumb').innerText = tabTitles[name] || 'Dashboard';
     }
 
-    // Sidebar Collapse/Expand Manager
     function toggleSidebarCollapse() {
       const sidebar = document.getElementById('mainSidebar');
       const icon = document.getElementById('collapseIcon');
@@ -677,14 +663,12 @@
       }
     }
 
-    // Keyboard shortcut '[' to toggle sidebar
     window.addEventListener('keydown', (e) => {
       if (e.key === '[' && !['INPUT', 'TEXTAREA'].includes(e.target.tagName)) {
         toggleSidebarCollapse();
       }
     });
 
-    // Restore state from localStorage
     if (localStorage.getItem('sidebar_collapsed') === 'true') {
       toggleSidebarCollapse();
     }
@@ -822,13 +806,13 @@
       if (isSimulating) {
         activeHeads = 10;
         btn.innerHTML = '<i class="fa-solid fa-play"></i> <span>Resume Simulation</span>';
-        btn.className = 'bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow transition';
+        btn.className = 'bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-2.5 py-1.5 rounded flex items-center gap-1.5 shadow transition';
         logEvent('Simulation paused: Attendance dropped to 40% (Ghost Batch Flagged).');
         isSimulating = false;
       } else {
         activeHeads = 20;
         btn.innerHTML = '<i class="fa-solid fa-stop"></i> <span>Stop Simulation</span>';
-        btn.className = 'bg-red-600 hover:bg-red-500 text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow transition';
+        btn.className = 'bg-red-600 hover:bg-red-500 text-white text-xs font-semibold px-2.5 py-1.5 rounded flex items-center gap-1.5 shadow transition';
         logEvent('Simulation restored: Standard batch headcount 20/25 verified.');
         isSimulating = true;
       }
