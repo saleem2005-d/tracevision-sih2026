@@ -15,50 +15,43 @@
     }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 flex h-screen overflow-hidden relative">
+<body class="bg-slate-100 text-slate-800 flex h-screen overflow-hidden">
 
-  <!-- Mobile Drawer Overlay Backdrop -->
-  <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/60 z-30 hidden lg:hidden backdrop-blur-sm"></div>
-
-  <!-- Left Sidebar Navigation -->
-  <aside id="sidebarDrawer" class="fixed lg:static top-0 bottom-0 left-0 w-64 bg-[#0d1b2a] text-slate-300 flex flex-col justify-between shrink-0 select-none z-40 transform -translate-x-full lg:translate-x-0 transition-transform duration-200">
+  <!-- Left Sidebar -->
+  <aside class="w-64 bg-[#0d1b2a] text-slate-300 flex flex-col justify-between shrink-0 select-none">
     <div>
-      <div class="p-4 border-b border-slate-800 flex justify-between items-center">
+      <div class="p-4 border-b border-slate-800">
         <span class="text-[10px] uppercase tracking-wider font-semibold text-slate-400">Navigation Menu</span>
-        <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 hover:text-white p-1">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
       </div>
 
-      <!-- Nav Items with explicit click handlers -->
       <nav class="mt-2 space-y-1 text-sm font-medium">
-        <button onclick="switchView('dashboard')" id="btn-nav-dashboard" class="nav-btn active w-full flex items-center gap-3 px-4 py-3 text-left transition hover:bg-slate-800/60 hover:text-white">
+        <button onclick="showTab('dashboard')" id="btn-dashboard" class="nav-btn active w-full flex items-center gap-3 px-4 py-3 text-left transition hover:bg-slate-800/60 hover:text-white">
           <i class="fa-solid fa-house w-4"></i>
           <span>Home Dashboard</span>
         </button>
-        <button onclick="switchView('surveillance')" id="btn-nav-surveillance" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-left transition hover:bg-slate-800/60 hover:text-white">
+        <button onclick="showTab('surveillance')" id="btn-surveillance" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-left transition hover:bg-slate-800/60 hover:text-white">
           <i class="fa-solid fa-video w-4"></i>
           <span>Surveillance Matrix</span>
         </button>
-        <button onclick="switchView('infra')" id="btn-nav-infra" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-left transition hover:bg-slate-800/60 hover:text-white">
+        <button onclick="showTab('infra')" id="btn-infra" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-left transition hover:bg-slate-800/60 hover:text-white">
           <i class="fa-solid fa-list-check w-4"></i>
           <span>Infra Verification</span>
         </button>
-        <button onclick="switchView('registry')" id="btn-nav-registry" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-left transition hover:bg-slate-800/60 hover:text-white">
+        <button onclick="showTab('registry')" id="btn-registry" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-left transition hover:bg-slate-800/60 hover:text-white">
           <i class="fa-solid fa-users w-4"></i>
           <span>Trainee Registry</span>
         </button>
-        <button onclick="switchView('alerts')" id="btn-nav-alerts" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-left transition hover:bg-slate-800/60 hover:text-white">
+        <button onclick="showTab('alerts')" id="btn-alerts" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-left transition hover:bg-slate-800/60 hover:text-white">
           <i class="fa-solid fa-triangle-exclamation w-4"></i>
           <span>Vigilance Alerts</span>
         </button>
-        <button onclick="switchView('geo')" id="btn-nav-geo" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-left transition hover:bg-slate-800/60 hover:text-white">
+        <button onclick="showTab('geo')" id="btn-geo" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-left transition hover:bg-slate-800/60 hover:text-white">
           <i class="fa-solid fa-location-crosshairs w-4"></i>
           <span>Geo-Compliance</span>
         </button>
       </nav>
 
-      <div class="p-4 mt-4 lg:mt-6 border-t border-slate-800">
+      <div class="p-4 mt-6 border-t border-slate-800">
         <span class="text-[10px] uppercase tracking-wider font-semibold text-slate-400">Inspection Exports</span>
         <div class="mt-2 space-y-1 text-sm font-medium">
           <a href="/api/v1/export-report" download class="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-800/60 hover:text-white text-slate-300 rounded transition">
@@ -79,80 +72,76 @@
     </div>
   </aside>
 
-  <!-- Right Viewport Area -->
+  <!-- Right Viewport -->
   <div class="flex-1 flex flex-col overflow-y-auto w-full min-w-0">
 
-    <!-- Top Ribbon Header -->
-    <header class="bg-white border-b border-slate-200 px-4 md:px-6 py-3 flex flex-wrap justify-between items-center shadow-sm gap-3">
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 px-6 py-3 flex justify-between items-center shadow-sm">
       <div class="flex items-center gap-3">
-        <button onclick="toggleSidebar()" class="lg:hidden text-slate-700 hover:text-slate-900 p-2 rounded-lg border border-slate-200">
-          <i class="fa-solid fa-bars text-lg"></i>
-        </button>
-        <div class="w-9 h-9 rounded-lg bg-orange-600 flex items-center justify-center text-white font-bold text-xl shadow shrink-0">
+        <div class="w-9 h-9 rounded-lg bg-orange-600 flex items-center justify-center text-white font-bold text-xl shadow">
           <i class="fa-solid fa-eye"></i>
         </div>
         <div>
-          <div class="flex flex-wrap items-center gap-1.5 md:gap-2">
-            <span class="text-lg md:text-xl font-extrabold tracking-tight text-slate-900">TraceVision</span>
-            <span class="text-[10px] md:text-xs bg-sky-50 text-sky-700 border border-sky-200 font-bold px-2 py-0.5 rounded">Center Monitoring Console</span>
+          <div class="flex items-center gap-2">
+            <span class="text-xl font-extrabold tracking-tight text-slate-900">TraceVision</span>
+            <span class="text-xs bg-sky-50 text-sky-700 border border-sky-200 font-bold px-2 py-0.5 rounded">Center Monitoring Console</span>
           </div>
-          <p class="text-[10px] md:text-xs font-semibold text-orange-600 leading-tight">Autonomous Trainee Headcount & Infra Verification</p>
+          <p class="text-xs font-semibold text-orange-600">Autonomous Trainee Headcount & Infra Verification</p>
         </div>
       </div>
 
-      <div class="text-right ml-auto">
-        <span class="text-[9px] md:text-[10px] uppercase font-bold tracking-wider text-slate-600 block">Monitoring Station</span>
-        <div class="text-xs md:text-sm font-bold text-slate-800">ANANTAPUR CENTER NODE</div>
-        <div class="text-[10px] md:text-[11px] font-semibold text-emerald-600 flex items-center justify-end gap-1.5">
+      <div class="text-right">
+        <span class="text-[10px] uppercase font-bold tracking-wider text-slate-600 block">Monitoring Station</span>
+        <div class="text-sm font-bold text-slate-800">ANANTAPUR CENTER NODE</div>
+        <div class="text-[11px] font-semibold text-emerald-600 flex items-center justify-end gap-1.5">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span>LIVE INFERENCE ONLINE</span>
         </div>
       </div>
     </header>
 
-    <!-- Sub-header Breadcrumb & Actions -->
-    <div class="px-4 md:px-6 py-2.5 flex flex-wrap justify-between items-center bg-slate-50 border-b border-slate-200 gap-2">
+    <!-- Sub-header -->
+    <div class="px-6 py-2.5 flex justify-between items-center bg-slate-50 border-b border-slate-200">
       <div class="text-xs text-slate-500 font-medium flex items-center gap-1.5">
         <i class="fa-solid fa-house text-slate-400"></i>
         <span>Home</span>
         <span>/</span>
-        <span id="breadcrumb-title" class="text-slate-700 font-semibold">Home Dashboard</span>
+        <span id="breadcrumb" class="text-slate-700 font-semibold">Home Dashboard</span>
       </div>
       <div class="flex items-center gap-2">
         <a href="/api/v1/export-report" download class="bg-[#1e3a5f] hover:bg-[#152a45] text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow-sm transition">
           <i class="fa-solid fa-download"></i>
-          <span class="hidden sm:inline">Generate CSV Report</span>
-          <span class="sm:hidden">CSV</span>
+          <span>Generate CSV Report</span>
         </a>
         <button onclick="clearLog()" class="bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 text-xs font-semibold px-2.5 py-1.5 rounded flex items-center gap-1.5 shadow-sm transition">
           <i class="fa-solid fa-rotate-right"></i>
-          <span class="hidden sm:inline">Clear Log</span>
+          <span>Clear Log</span>
         </button>
       </div>
     </div>
 
-    <!-- ==================== TAB 1: HOME DASHBOARD ==================== -->
-    <section id="panel-dashboard" class="tab-panel p-4 md:p-6 space-y-5 flex-1">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+    <!-- TAB 1: HOME DASHBOARD -->
+    <div id="tab-dashboard" class="p-6 space-y-5">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-white border-t-4 border-[#1e3a5f] border-x border-b border-slate-200 p-4 rounded shadow-sm">
           <span class="text-[11px] font-bold tracking-wider uppercase text-slate-500">Registered Trainees</span>
-          <div class="text-2xl md:text-3xl font-extrabold text-slate-800 mt-1">25</div>
+          <div class="text-3xl font-extrabold text-slate-800 mt-1">25</div>
           <span class="text-[11px] text-slate-400">Candidate Batch: Regular Session</span>
         </div>
         <div class="bg-white border-t-4 border-amber-500 border-x border-b border-slate-200 p-4 rounded shadow-sm">
           <span class="text-[11px] font-bold tracking-wider uppercase text-slate-500">AI Present (Live)</span>
-          <div id="stat-headcount" class="text-2xl md:text-3xl font-extrabold text-slate-800 mt-1">20</div>
+          <div id="stat-headcount" class="text-3xl font-extrabold text-slate-800 mt-1">20</div>
           <span class="text-[11px] text-slate-400">Real-Time Face & Head Count</span>
         </div>
         <div class="bg-white border-t-4 border-emerald-600 border-x border-b border-slate-200 p-4 rounded shadow-sm">
           <span class="text-[11px] font-bold tracking-wider uppercase text-slate-500">Live Attendance Ratio</span>
-          <div id="stat-ratio" class="text-2xl md:text-3xl font-extrabold text-slate-800 mt-1">80%</div>
+          <div id="stat-ratio" class="text-3xl font-extrabold text-slate-800 mt-1">80%</div>
           <span class="text-[11px] text-slate-400">Minimum Requisite: 70%</span>
         </div>
         <div class="bg-white border-t-4 border-emerald-500 border-x border-b border-slate-200 p-4 rounded shadow-sm flex flex-col justify-between" id="status-card-border">
           <div>
             <span class="text-[11px] font-bold tracking-wider uppercase text-slate-500">Compliance Status</span>
-            <div class="mt-1.5 md:mt-2">
+            <div class="mt-2">
               <span id="stat-status-badge" class="bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-xs px-2.5 py-1 rounded uppercase tracking-wide">COMPLIANT</span>
             </div>
           </div>
@@ -161,46 +150,46 @@
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
-        <div class="lg:col-span-2 bg-white border border-slate-200 rounded p-3 md:p-4 shadow-sm space-y-3">
-          <div class="flex flex-wrap justify-between items-center gap-2">
-            <div class="flex items-center gap-2 font-bold text-slate-800 text-xs md:text-sm">
+        <div class="lg:col-span-2 bg-white border border-slate-200 rounded p-4 shadow-sm space-y-3">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2 font-bold text-slate-800 text-sm">
               <i class="fa-solid fa-video text-slate-600"></i>
               <span>PRIMARY CAMERA STREAM</span>
             </div>
-            <div class="flex items-center gap-2 text-[11px] md:text-xs font-mono">
+            <div class="flex items-center gap-2 text-xs font-mono">
               <span class="bg-emerald-50 text-emerald-700 border border-emerald-300 px-2 py-0.5 rounded font-semibold">INFERENCE: 11MS</span>
               <span class="bg-amber-50 text-amber-700 border border-amber-300 px-2 py-0.5 rounded font-semibold">FPS: 15.0</span>
             </div>
           </div>
 
-          <div class="flex flex-wrap justify-between items-center pt-2 border-t border-slate-100 gap-2">
-            <div class="flex flex-wrap gap-1.5 md:gap-2 text-xs font-semibold">
-              <button onclick="switchCam('CAM 1: Theory Room (Active)', 20, this)" class="cam-btn bg-[#1e3a5f] text-white px-2.5 py-1.5 rounded shadow-sm text-xs">CAM 1: Theory Room</button>
-              <button onclick="switchCam('CAM 2: IT Lab (Active)', 24, this)" class="cam-btn bg-slate-100 text-slate-600 hover:bg-slate-200 px-2.5 py-1.5 rounded border border-slate-200 text-xs">CAM 2: IT Lab</button>
-              <button onclick="switchCam('CAM 3: Biometric Entry (Active)', 2, this)" class="cam-btn bg-slate-100 text-slate-600 hover:bg-slate-200 px-2.5 py-1.5 rounded border border-slate-200 text-xs">CAM 3: Biometric Entry</button>
+          <div class="flex justify-between items-center pt-2 border-t border-slate-100">
+            <div class="flex gap-2 text-xs font-semibold">
+              <button onclick="switchCam('CAM 1: Theory Room (Active)', 20, this)" class="cam-btn bg-[#1e3a5f] text-white px-2.5 py-1.5 rounded shadow-sm">CAM 1: Theory Room</button>
+              <button onclick="switchCam('CAM 2: IT Lab (Active)', 24, this)" class="cam-btn bg-slate-100 text-slate-600 hover:bg-slate-200 px-2.5 py-1.5 rounded border border-slate-200">CAM 2: IT Lab</button>
+              <button onclick="switchCam('CAM 3: Biometric Entry (Active)', 2, this)" class="cam-btn bg-slate-100 text-slate-600 hover:bg-slate-200 px-2.5 py-1.5 rounded border border-slate-200">CAM 3: Biometric Entry</button>
             </div>
-            <span id="active-cam-label" class="text-xs text-slate-400 font-medium hidden sm:inline">CAM 1: Theory Room (Active)</span>
+            <span id="active-cam-label" class="text-xs text-slate-400 font-medium">CAM 1: Theory Room (Active)</span>
           </div>
 
-          <div class="relative w-full aspect-video bg-[#0b1320] rounded border border-slate-800 overflow-hidden flex flex-col justify-between p-2.5 md:p-3 select-none">
-            <div class="z-10 bg-black/70 border border-slate-800 rounded px-2 md:px-2.5 py-1 text-[10px] md:text-[11px] font-mono text-amber-400 max-w-fit leading-tight backdrop-blur">
+          <div class="relative w-full aspect-video bg-[#0b1320] rounded border border-slate-800 overflow-hidden flex flex-col justify-between p-3 select-none">
+            <div class="z-10 bg-black/70 border border-slate-800 rounded px-2.5 py-1 text-[11px] font-mono text-amber-400 max-w-fit leading-tight backdrop-blur">
               <div>TRACEVISION CORE | SURVEILLANCE NODE</div>
               <div class="text-slate-400">GEO: 14.6819 N, 77.6006 E | <span id="osd-timestamp">2026-10-07T08:26:00.000Z</span></div>
             </div>
             <video id="webcamVideo" autoplay playsinline muted class="hidden absolute inset-0 w-full h-full object-cover"></video>
             <canvas id="surveillanceCanvas" width="680" height="340" class="w-full h-full absolute inset-0 pointer-events-none"></canvas>
-            <div class="z-10 flex flex-wrap justify-between items-center pt-2 gap-2">
-              <div class="flex flex-wrap gap-2">
-                <button onclick="toggleWebcam()" id="btn-webcam" class="bg-[#1e3a5f] hover:bg-[#152a45] text-white text-[11px] md:text-xs font-semibold px-2.5 md:px-3 py-1.5 rounded flex items-center gap-1.5 shadow transition">
+            <div class="z-10 flex justify-between items-center pt-2">
+              <div class="flex gap-2">
+                <button onclick="toggleWebcam()" id="btn-webcam" class="bg-[#1e3a5f] hover:bg-[#152a45] text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow transition">
                   <i class="fa-solid fa-camera"></i>
                   <span id="webcam-btn-text">Connect Hardware Webcam</span>
                 </button>
-                <button onclick="toggleSimulation()" id="btn-sim" class="bg-red-600 hover:bg-red-500 text-white text-[11px] md:text-xs font-semibold px-2.5 md:px-3 py-1.5 rounded flex items-center gap-1.5 shadow transition">
+                <button onclick="toggleSimulation()" id="btn-sim" class="bg-red-600 hover:bg-red-500 text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow transition">
                   <i class="fa-solid fa-stop"></i>
                   <span>Stop Simulation</span>
                 </button>
               </div>
-              <div class="text-[10px] md:text-[11px] text-slate-400 font-mono">Anti-Spoofing: <span class="text-emerald-400 font-bold">ACTIVE</span></div>
+              <div class="text-[11px] text-slate-400 font-mono">Anti-Spoofing: <span class="text-emerald-400 font-bold">ACTIVE</span></div>
             </div>
           </div>
         </div>
@@ -252,10 +241,10 @@
           </div>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- ==================== TAB 2: SURVEILLANCE MATRIX ==================== -->
-    <section id="panel-surveillance" class="tab-panel hidden p-4 md:p-6 space-y-4 flex-1">
+    <!-- TAB 2: SURVEILLANCE MATRIX -->
+    <div id="tab-surveillance" class="p-6 space-y-4" style="display:none;">
       <div class="bg-white border border-slate-200 rounded p-4 shadow-sm flex justify-between items-center">
         <div>
           <h2 class="text-sm font-bold text-slate-900 uppercase">Surveillance Matrix (Multi-Camera Array)</h2>
@@ -281,12 +270,12 @@
           <div class="aspect-video bg-slate-950 rounded flex items-center justify-center border border-slate-800 text-xs font-mono text-emerald-400 font-bold">APPARATUS DETECTED IN QUADRANT 3</div>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- ==================== TAB 3: INFRA VERIFICATION ==================== -->
-    <section id="panel-infra" class="tab-panel hidden p-4 md:p-6 space-y-5 flex-1">
-      <div class="bg-white border border-slate-200 rounded p-4 md:p-5 shadow-sm space-y-4">
-        <div class="flex flex-wrap justify-between items-center border-b border-slate-200 pb-3 gap-2">
+    <!-- TAB 3: INFRA VERIFICATION -->
+    <div id="tab-infra" class="p-6 space-y-5" style="display:none;">
+      <div class="bg-white border border-slate-200 rounded p-5 shadow-sm space-y-4">
+        <div class="flex justify-between items-center border-b border-slate-200 pb-3">
           <div>
             <h2 class="text-sm font-extrabold text-slate-800 uppercase tracking-wide flex items-center gap-2">
               <i class="fa-solid fa-list-check text-slate-600"></i>
@@ -300,7 +289,7 @@
           </button>
         </div>
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs border-collapse min-w-[500px]">
+          <table class="w-full text-left text-xs border-collapse">
             <thead>
               <tr class="border-b border-slate-200 text-slate-600 font-bold">
                 <th class="py-2.5">Compliance Parameter</th>
@@ -344,12 +333,12 @@
           </table>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- ==================== TAB 4: TRAINEE REGISTRY ==================== -->
-    <section id="panel-registry" class="tab-panel hidden p-4 md:p-6 space-y-4 flex-1">
+    <!-- TAB 4: TRAINEE REGISTRY -->
+    <div id="tab-registry" class="p-6 space-y-4" style="display:none;">
       <div class="bg-white border border-slate-200 rounded p-5 shadow-sm space-y-4">
-        <div class="flex flex-wrap justify-between items-center border-b pb-3 gap-2">
+        <div class="flex justify-between items-center border-b pb-3">
           <div>
             <h2 class="text-sm font-bold text-slate-900 uppercase">Trainee Registry (Batch PMKVY-4.0-CSE-B1)</h2>
             <p class="text-xs text-slate-500">Candidate identification cross-referenced with edge telemetry vectors</p>
@@ -379,10 +368,10 @@
           </div>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- ==================== TAB 5: VIGILANCE ALERTS ==================== -->
-    <section id="panel-alerts" class="tab-panel hidden p-4 md:p-6 space-y-4 flex-1">
+    <!-- TAB 5: VIGILANCE ALERTS -->
+    <div id="tab-alerts" class="p-6 space-y-4" style="display:none;">
       <div class="bg-white border border-slate-200 rounded p-5 shadow-sm space-y-4">
         <div class="flex justify-between items-center border-b pb-3">
           <div>
@@ -402,10 +391,10 @@
           </div>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- ==================== TAB 6: GEO-COMPLIANCE ==================== -->
-    <section id="panel-geo" class="tab-panel hidden p-4 md:p-6 space-y-4 flex-1">
+    <!-- TAB 6: GEO-COMPLIANCE -->
+    <div id="tab-geo" class="p-6 space-y-4" style="display:none;">
       <div class="bg-white border border-slate-200 rounded p-5 shadow-sm space-y-4">
         <div class="border-b pb-3">
           <h2 class="text-sm font-bold text-slate-900 uppercase">Geo-Fencing & Physical Location Locking</h2>
@@ -427,13 +416,13 @@
           </div>
         </div>
       </div>
-    </section>
+    </div>
 
   </div>
 
   <script>
-    // Exact view switching router
-    const viewTitles = {
+    const tabs = ['dashboard', 'surveillance', 'infra', 'registry', 'alerts', 'geo'];
+    const tabTitles = {
       'dashboard': 'Home Dashboard',
       'surveillance': 'Surveillance Matrix',
       'infra': 'Infrastructure Verification',
@@ -442,49 +431,17 @@
       'geo': 'Geo-Compliance'
     };
 
-    function switchView(tabKey) {
-      // 1. Hide all panels
-      const allPanels = document.querySelectorAll('.tab-panel');
-      allPanels.forEach(p => p.classList.add('hidden'));
-
-      // 2. Show the active panel
-      const targetPanel = document.getElementById('panel-' + tabKey);
-      if (targetPanel) {
-        targetPanel.classList.remove('hidden');
-      }
-
-      // 3. Reset all nav buttons and set active
-      const allNavBtns = document.querySelectorAll('.nav-btn');
-      allNavBtns.forEach(btn => btn.classList.remove('active'));
-
-      const currentBtn = document.getElementById('btn-nav-' + tabKey);
-      if (currentBtn) {
-        currentBtn.classList.add('active');
-      }
-
-      // 4. Update breadcrumb
-      document.getElementById('breadcrumb-title').innerText = viewTitles[tabKey] || 'Dashboard';
-
-      // 5. Close mobile drawer if opened
-      if (window.innerWidth < 1024) {
-        const drawer = document.getElementById('sidebarDrawer');
-        const backdrop = document.getElementById('sidebarBackdrop');
-        drawer.classList.add('-translate-x-full');
-        backdrop.classList.add('hidden');
-      }
-    }
-
-    function toggleSidebar() {
-      const drawer = document.getElementById('sidebarDrawer');
-      const backdrop = document.getElementById('sidebarBackdrop');
-      const isOpen = !drawer.classList.contains('-translate-x-full');
-      if (isOpen) {
-        drawer.classList.add('-translate-x-full');
-        backdrop.classList.add('hidden');
-      } else {
-        drawer.classList.remove('-translate-x-full');
-        backdrop.classList.remove('hidden');
-      }
+    function showTab(name) {
+      tabs.forEach(t => {
+        const el = document.getElementById('tab-' + t);
+        const btn = document.getElementById('btn-' + t);
+        if (el) el.style.display = (t === name) ? 'block' : 'none';
+        if (btn) {
+          if (t === name) btn.classList.add('active');
+          else btn.classList.remove('active');
+        }
+      });
+      document.getElementById('breadcrumb').innerText = tabTitles[name] || 'Dashboard';
     }
 
     let activeHeads = 20;
@@ -580,7 +537,6 @@
         ctx.strokeStyle = '#38bdf8';
         ctx.lineWidth = 2;
         ctx.strokeRect(180, 70, 160, 190);
-
         ctx.fillStyle = '#38bdf8';
         ctx.font = '10px monospace';
         ctx.fillText('ANONYMOUS_HEAD_ID #01 [CONF: 98.4%]', 180, 62);
@@ -621,13 +577,13 @@
       if (isSimulating) {
         activeHeads = 10;
         btn.innerHTML = '<i class="fa-solid fa-play"></i> <span>Resume Simulation</span>';
-        btn.className = 'bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] md:text-xs font-semibold px-2.5 md:px-3 py-1.5 rounded flex items-center gap-1.5 shadow transition';
+        btn.className = 'bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow transition';
         logEvent('Simulation paused: Attendance dropped to 40% (Ghost Batch Flagged).');
         isSimulating = false;
       } else {
         activeHeads = 20;
         btn.innerHTML = '<i class="fa-solid fa-stop"></i> <span>Stop Simulation</span>';
-        btn.className = 'bg-red-600 hover:bg-red-500 text-white text-[11px] md:text-xs font-semibold px-2.5 md:px-3 py-1.5 rounded flex items-center gap-1.5 shadow transition';
+        btn.className = 'bg-red-600 hover:bg-red-500 text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow transition';
         logEvent('Simulation restored: Standard batch headcount 20/25 verified.');
         isSimulating = true;
       }
@@ -648,7 +604,8 @@
     }
 
     setInterval(() => {
-      document.getElementById('osd-timestamp').innerText = new Date().toISOString();
+      const el = document.getElementById('osd-timestamp');
+      if (el) el.innerText = new Date().toISOString();
     }, 1000);
 
     renderCanvas();
