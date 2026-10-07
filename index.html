@@ -9,6 +9,18 @@
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
     .sidebar-active { background-color: #1e3a5f; border-left: 4px solid #38bdf8; }
+    .scan-line {
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: rgba(56, 189, 248, 0.4);
+      animation: scan 4s linear infinite;
+    }
+    @keyframes scan {
+      0% { top: 0%; opacity: 0; }
+      15% { opacity: 1; }
+      85% { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
   </style>
 </head>
 <body class="bg-slate-100 text-slate-800 flex h-screen overflow-hidden">
@@ -32,15 +44,15 @@
           <i class="fa-solid fa-list-check w-4"></i>
           <span>Infra Verification</span>
         </button>
-        <button onclick="alert('Batch Roster: 25 Enrolled Candidates Verified under PMKVY Scheme.')" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-800/60 hover:text-white text-slate-300 text-left transition">
+        <button onclick="openModal('roster-modal')" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-800/60 hover:text-white text-slate-300 text-left transition">
           <i class="fa-solid fa-users w-4"></i>
           <span>Trainee Registry</span>
         </button>
-        <button onclick="alert('Zero active critical alerts. Center is in full compliance.')" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-800/60 hover:text-white text-slate-300 text-left transition">
+        <button onclick="openModal('alerts-modal')" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-800/60 hover:text-white text-slate-300 text-left transition">
           <i class="fa-solid fa-triangle-exclamation w-4"></i>
           <span>Vigilance Alerts</span>
         </button>
-        <button onclick="alert('Geo-Fence Active: Coordinates 14.6819 N, 77.6006 E locked.')" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-800/60 hover:text-white text-slate-300 text-left transition">
+        <button onclick="openModal('geo-modal')" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-800/60 hover:text-white text-slate-300 text-left transition">
           <i class="fa-solid fa-location-crosshairs w-4"></i>
           <span>Geo-Compliance</span>
         </button>
@@ -67,7 +79,7 @@
     </div>
   </aside>
 
-  <!-- Right Main Area -->
+  <!-- Right Main Content -->
   <div class="flex-1 flex flex-col overflow-y-auto">
 
     <!-- Top Ribbon Bar -->
@@ -118,6 +130,7 @@
     <!-- VIEW 1: Home Dashboard -->
     <main id="view-dashboard" class="p-6 space-y-5 flex-1">
 
+      <!-- 4 Metric Cards -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div class="bg-white border-t-4 border-[#1e3a5f] border-x border-b border-slate-200 p-4 rounded shadow-sm">
           <span class="text-[11px] font-bold tracking-wider uppercase text-slate-500">Registered Trainees</span>
@@ -137,7 +150,7 @@
           <span class="text-[11px] text-slate-400">Minimum Requisite: 70%</span>
         </div>
 
-        <div class="bg-white border-t-4 border-emerald-500 border-x border-b border-slate-200 p-4 rounded shadow-sm flex flex-col justify-between">
+        <div class="bg-white border-t-4 border-emerald-500 border-x border-b border-slate-200 p-4 rounded shadow-sm flex flex-col justify-between" id="status-card-border">
           <div>
             <span class="text-[11px] font-bold tracking-wider uppercase text-slate-500">Compliance Status</span>
             <div class="mt-2">
@@ -148,8 +161,10 @@
         </div>
       </div>
 
+      <!-- Main Columns -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
 
+        <!-- Left 2 Cols: Primary Stream & HUD -->
         <div class="lg:col-span-2 bg-white border border-slate-200 rounded p-4 shadow-sm space-y-3">
           <div class="flex justify-between items-center">
             <div class="flex items-center gap-2 font-bold text-slate-800 text-sm">
@@ -157,11 +172,12 @@
               <span>PRIMARY CAMERA STREAM</span>
             </div>
             <div class="flex items-center gap-2 text-xs font-mono">
-              <span class="bg-emerald-50 text-emerald-700 border border-emerald-300 px-2 py-0.5 rounded font-semibold">INFERENCE: 11MS</span>
-              <span class="bg-amber-50 text-amber-700 border border-amber-300 px-2 py-0.5 rounded font-semibold">FPS: 5.0</span>
+              <span id="osd-inference" class="bg-emerald-50 text-emerald-700 border border-emerald-300 px-2 py-0.5 rounded font-semibold">INFERENCE: 11MS</span>
+              <span class="bg-amber-50 text-amber-700 border border-amber-300 px-2 py-0.5 rounded font-semibold">FPS: 15.0</span>
             </div>
           </div>
 
+          <!-- Zone Selector -->
           <div class="flex justify-between items-center pt-1 border-t border-slate-100">
             <div class="flex gap-2 text-xs font-semibold">
               <button onclick="switchCam('CAM 1: Theory Room (Active)', 20, this)" class="cam-btn bg-[#1e3a5f] text-white px-3 py-1.5 rounded shadow-sm">CAM 1: Theory Room</button>
@@ -171,21 +187,27 @@
             <span id="active-cam-label" class="text-xs text-slate-400 font-medium">CAM 1: Theory Room (Active)</span>
           </div>
 
+          <!-- Feed Screen -->
           <div class="relative w-full aspect-[16/9] bg-[#0b1320] rounded border border-slate-800 overflow-hidden flex flex-col justify-between p-3 select-none">
-            <div class="bg-black/70 border border-slate-800 rounded px-2.5 py-1 text-[11px] font-mono text-amber-400 max-w-fit leading-tight">
+            <div class="scan-line"></div>
+            
+            <div class="z-10 bg-black/70 border border-slate-800 rounded px-2.5 py-1 text-[11px] font-mono text-amber-400 max-w-fit leading-tight backdrop-blur">
               <div>TRACEVISION CORE | ACTIVE SURVEILLANCE NODE</div>
-              <div class="text-slate-400">GEO-STAMP: 14.6819 N, 77.6006 E | <span id="osd-timestamp">2026-10-07T08:26:00.000Z</span></div>
+              <div class="text-slate-400">GEO: 14.6819 N, 77.6006 E | <span id="osd-timestamp">2026-10-07T08:26:00.000Z</span></div>
             </div>
 
+            <!-- Video / Canvas Elements -->
+            <video id="webcamVideo" autoplay playsinline muted class="hidden absolute inset-0 w-full h-full object-cover"></video>
             <canvas id="surveillanceCanvas" width="680" height="340" class="w-full h-full absolute inset-0 pointer-events-none"></canvas>
 
+            <!-- Bottom Camera Controls -->
             <div class="z-10 flex justify-between items-center pt-2">
               <div class="flex gap-2">
-                <button onclick="toggleWebcam()" id="btn-webcam" class="bg-[#1e3a5f] hover:bg-[#152a45] text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow">
+                <button onclick="toggleWebcam()" id="btn-webcam" class="bg-[#1e3a5f] hover:bg-[#152a45] text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow transition">
                   <i class="fa-solid fa-camera"></i>
-                  <span>Connect Hardware Webcam</span>
+                  <span id="webcam-btn-text">Connect Hardware Webcam</span>
                 </button>
-                <button onclick="toggleSimulation()" id="btn-sim" class="bg-red-600 hover:bg-red-500 text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow">
+                <button onclick="toggleSimulation()" id="btn-sim" class="bg-red-600 hover:bg-red-500 text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow transition">
                   <i class="fa-solid fa-stop"></i>
                   <span>Stop Simulation</span>
                 </button>
@@ -197,8 +219,10 @@
           </div>
         </div>
 
+        <!-- Right Col: Rules & Logs -->
         <div class="space-y-4">
 
+          <!-- Real-Time Rules -->
           <div class="bg-white border border-slate-200 rounded p-4 shadow-sm space-y-3">
             <div class="flex justify-between items-center border-b border-slate-100 pb-2">
               <div class="flex items-center gap-2 font-bold text-slate-800 text-xs">
@@ -265,6 +289,7 @@
             </div>
           </div>
 
+          <!-- Discrepancy Stream -->
           <div class="bg-white border border-slate-200 rounded p-4 shadow-sm space-y-2">
             <div class="flex justify-between items-center border-b border-slate-100 pb-2">
               <div class="flex items-center gap-1.5 font-bold text-slate-800 text-xs">
@@ -276,10 +301,7 @@
 
             <div id="discrepancy-feed" class="text-xs font-mono space-y-1.5 max-h-36 overflow-y-auto pr-1">
               <div class="text-slate-700">
-                <span class="text-slate-400">[7:42:06 pm]</span> <span class="text-emerald-600 font-bold">&#x2714;</span> Synthetic classroom test active. Simulating batch verification...
-              </div>
-              <div class="text-slate-500 text-[11px]">
-                [READY] TraceVision core ready. Click <b>Connect Hardware Webcam</b> or <b>Run Synthetic Classroom Test</b>.
+                <span class="text-slate-400">[SYSTEM]</span> <span class="text-emerald-600 font-bold">&#x2714;</span> Center TC-AP-ANP-042 monitoring active.
               </div>
             </div>
           </div>
@@ -356,9 +378,50 @@
 
   </div>
 
+  <!-- Trainee Registry Modal -->
+  <div id="roster-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-6 space-y-4">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="font-bold text-slate-800 text-base">Verified Candidate Batch Roster (PMKVY 4.0)</h3>
+        <button onclick="closeModal('roster-modal')" class="text-slate-400 hover:text-slate-700 text-lg font-bold">&times;</button>
+      </div>
+      <div class="text-xs space-y-2 max-h-64 overflow-y-auto font-mono">
+        <div class="flex justify-between p-2 bg-slate-50 rounded"><span>TR-2026-01 to TR-2026-20</span><span class="text-emerald-600 font-bold">Present (Optical + Head Count)</span></div>
+        <div class="flex justify-between p-2 bg-slate-50 rounded"><span>TR-2026-21 to TR-2026-25</span><span class="text-amber-600 font-bold">Absent (Unverified)</span></div>
+      </div>
+      <div class="text-right">
+        <button onclick="closeModal('roster-modal')" class="bg-[#1e3a5f] text-white text-xs font-semibold px-4 py-2 rounded">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Geo-Compliance Modal -->
+  <div id="geo-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 space-y-4">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="font-bold text-slate-800 text-base">Geo-Fencing & Tamper Protection</h3>
+        <button onclick="closeModal('geo-modal')" class="text-slate-400 hover:text-slate-700 text-lg font-bold">&times;</button>
+      </div>
+      <div class="text-xs text-slate-600 space-y-2">
+        <p><b>Designated Coordinates:</b> 14.6819° N, 77.6006° E (Anantapur Center Node)</p>
+        <p><b>Boundary Drift:</b> 0.00 meters (Zero deviation detected)</p>
+        <p><b>Tamper Protection:</b> Active frame variance analysis enabled.</p>
+      </div>
+      <div class="text-right">
+        <button onclick="closeModal('geo-modal')" class="bg-[#1e3a5f] text-white text-xs font-semibold px-4 py-2 rounded">Close</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     let activeHeads = 20;
     let isSimulating = true;
+    let webcamActive = false;
+    let webcamStream = null;
+    let animationFrameId = null;
+
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
     function switchView(view) {
       const vDash = document.getElementById('view-dashboard');
@@ -390,7 +453,6 @@
       btn.className = 'cam-btn bg-[#1e3a5f] text-white px-3 py-1.5 rounded shadow-sm';
       activeHeads = count;
       updateMetrics();
-      drawMatrixCanvas();
       logEvent(`Switched stream to ${name}. Detected occupancy: ${count}`);
     }
 
@@ -405,56 +467,128 @@
       const isPass = ratio >= 70;
       const badge = document.getElementById('stat-status-badge');
       const ruleBadge = document.getElementById('rule-attendance-badge');
+      const scoreBadge = document.getElementById('score-badge');
+      const borderCard = document.getElementById('status-card-border');
 
       if (isPass) {
         badge.className = 'bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-xs px-2.5 py-1 rounded uppercase tracking-wide';
         badge.innerText = 'COMPLIANT';
         ruleBadge.className = 'bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded';
         ruleBadge.innerText = 'PASS';
+        scoreBadge.className = 'bg-emerald-50 text-emerald-700 border border-emerald-300 font-bold text-[11px] px-2 py-0.5 rounded';
+        scoreBadge.innerText = 'SCORE: 95 / 100';
+        borderCard.className = 'bg-white border-t-4 border-emerald-500 border-x border-b border-slate-200 p-4 rounded shadow-sm flex flex-col justify-between';
       } else {
         badge.className = 'bg-red-100 text-red-800 border border-red-300 font-bold text-xs px-2.5 py-1 rounded uppercase tracking-wide';
         badge.innerText = 'NON-COMPLIANT';
         ruleBadge.className = 'bg-red-100 text-red-800 text-[10px] font-bold px-2 py-0.5 rounded';
         ruleBadge.innerText = 'FAIL';
+        scoreBadge.className = 'bg-red-50 text-red-700 border border-red-300 font-bold text-[11px] px-2 py-0.5 rounded';
+        scoreBadge.innerText = 'SCORE: 58 / 100';
+        borderCard.className = 'bg-white border-t-4 border-red-500 border-x border-b border-slate-200 p-4 rounded shadow-sm flex flex-col justify-between';
       }
     }
 
-    function drawMatrixCanvas() {
+    // Smooth Canvas Renderer with Subtle Jitter
+    let tick = 0;
+    function renderCanvas() {
       const canvas = document.getElementById('surveillanceCanvas');
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      ctx.fillStyle = '#1b2a41';
-      for (let row = 0; row < 4; row++) {
-        const y = 80 + row * 65;
-        ctx.fillRect(40, y + 22, 600, 10);
-      }
-
-      const cols = 6;
-      let drawn = 0;
-      for (let row = 0; row < 4; row++) {
-        for (let col = 0; col < cols; col++) {
-          if (drawn >= activeHeads) break;
-          const x = 70 + col * 95;
-          const y = 65 + row * 65;
-
-          ctx.strokeStyle = '#10b981';
-          ctx.lineWidth = 1.5;
-          ctx.strokeRect(x - 5, y - 5, 46, 46);
-
-          ctx.fillStyle = '#10b981';
-          ctx.font = '7px monospace';
-          ctx.fillText(`Verified TR-2026-${(drawn + 1).toString().padStart(2, '0')}`, x - 5, y - 8);
-
-          ctx.fillStyle = '#38bdf8';
-          ctx.beginPath();
-          ctx.arc(x + 18, y + 18, 16, 0, Math.PI * 2);
-          ctx.fill();
-
-          drawn++;
+      if (!webcamActive) {
+        // Draw Classroom Desks
+        ctx.fillStyle = '#1b2a41';
+        for (let row = 0; row < 4; row++) {
+          const y = 80 + row * 65;
+          ctx.fillRect(40, y + 22, 600, 10);
         }
+
+        // Draw Simulated Trainees with organic jitter
+        const cols = 6;
+        let drawn = 0;
+        for (let row = 0; row < 4; row++) {
+          for (let col = 0; col < cols; col++) {
+            if (drawn >= activeHeads) break;
+            const jitterX = Math.sin(tick * 0.05 + drawn) * 1.2;
+            const jitterY = Math.cos(tick * 0.04 + drawn) * 0.8;
+            const x = 70 + col * 95 + jitterX;
+            const y = 65 + row * 65 + jitterY;
+
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(x - 5, y - 5, 46, 46);
+
+            ctx.fillStyle = '#10b981';
+            ctx.font = '7px monospace';
+            ctx.fillText(`Verified TR-2026-${(drawn + 1).toString().padStart(2, '0')}`, x - 5, y - 8);
+
+            ctx.fillStyle = '#38bdf8';
+            ctx.beginPath();
+            ctx.arc(x + 18, y + 18, 16, 0, Math.PI * 2);
+            ctx.fill();
+
+            drawn++;
+          }
+        }
+      } else {
+        // Live Webcam Mode: Draw Tracking HUD Overlays
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(180, 70, 160, 190);
+
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = '10px monospace';
+        ctx.fillText('ANONYMOUS_HEAD_ID #01 [CONF: 98.4%]', 180, 62);
       }
+
+      tick++;
+      animationFrameId = requestAnimationFrame(renderCanvas);
+    }
+
+    async function toggleWebcam() {
+      const video = document.getElementById('webcamVideo');
+      const btnText = document.getElementById('webcam-btn-text');
+
+      if (!webcamActive) {
+        try {
+          webcamStream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 360 } });
+          video.srcObject = webcamStream;
+          video.classList.remove('hidden');
+          webcamActive = true;
+          btnText.innerText = 'Disconnect Webcam';
+          logEvent('Hardware camera connected via WebRTC. Real-time optical inference active.');
+        } catch (e) {
+          alert('Webcam access was denied or hardware not found. Reverting to synthetic classroom feed.');
+        }
+      } else {
+        if (webcamStream) {
+          webcamStream.getTracks().forEach(track => track.stop());
+        }
+        video.classList.add('hidden');
+        webcamActive = false;
+        btnText.innerText = 'Connect Hardware Webcam';
+        logEvent('Switched back to synthetic multi-camera array.');
+      }
+    }
+
+    function toggleSimulation() {
+      const btn = document.getElementById('btn-sim');
+      if (isSimulating) {
+        activeHeads = 10;
+        btn.innerHTML = '<i class="fa-solid fa-play"></i> <span>Resume Simulation</span>';
+        btn.className = 'bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow transition';
+        logEvent('Simulation paused: Trainee attendance dropped to 40% (Ghost Batch Flagged).');
+        isSimulating = false;
+      } else {
+        activeHeads = 20;
+        btn.innerHTML = '<i class="fa-solid fa-stop"></i> <span>Stop Simulation</span>';
+        btn.className = 'bg-red-600 hover:bg-red-500 text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow transition';
+        logEvent('Simulation restored: Standard batch headcount 20/25 verified.');
+        isSimulating = true;
+      }
+      updateMetrics();
     }
 
     function logEvent(msg) {
@@ -470,30 +604,6 @@
       document.getElementById('discrepancy-feed').innerHTML = '<div class="text-slate-500 text-[11px]">[CLEARED] Event log reset by inspector.</div>';
     }
 
-    function toggleSimulation() {
-      const btn = document.getElementById('btn-sim');
-      if (isSimulating) {
-        activeHeads = 10;
-        btn.innerHTML = '<i class="fa-solid fa-play"></i> <span>Resume Simulation</span>';
-        btn.className = 'bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow';
-        logEvent('Simulation paused: Trainee attendance dropped to 40% (Ghost Batch Flagged).');
-        isSimulating = false;
-      } else {
-        activeHeads = 20;
-        btn.innerHTML = '<i class="fa-solid fa-stop"></i> <span>Stop Simulation</span>';
-        btn.className = 'bg-red-600 hover:bg-red-500 text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow';
-        logEvent('Simulation restored: Standard batch headcount 20/25 verified.');
-        isSimulating = true;
-      }
-      updateMetrics();
-      drawMatrixCanvas();
-    }
-
-    function toggleWebcam() {
-      alert('Local hardware video feed bridge initiated. Edge OpenCV frame analyzer listening.');
-      logEvent('Hardware camera feed connected. Spatial optical head tracking active.');
-    }
-
     function rescanInfra() {
       alert('Equipment re-scanned. All 26 workstations and fire safety apparatus verified.');
     }
@@ -502,7 +612,8 @@
       document.getElementById('osd-timestamp').innerText = new Date().toISOString();
     }, 1000);
 
-    drawMatrixCanvas();
+    renderCanvas();
+    updateMetrics();
   </script>
 </body>
 </html>
